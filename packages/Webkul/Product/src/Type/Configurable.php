@@ -50,9 +50,9 @@ class Configurable extends AbstractType
     /**
      * These are the types which can be fillable when generating variant.
      *
-     * @var array
+     * @var \Illuminate\Database\Eloquent\Collection
      */
-    protected $fillableVariantAttributes = [];
+    protected $fillableVariantAttributes;
 
     /**
      * Is a composite product type.
@@ -146,13 +146,15 @@ class Configurable extends AbstractType
 
         foreach ($data['variants'] ?? [] as $variantId => $variantData) {
             if (Str::contains($variantId, 'variant_')) {
-                $permutation = [];
+                $superAttributes = [];
 
                 foreach ($product->super_attributes as $superAttribute) {
-                    $permutation[$superAttribute->id] = $variantData[$superAttribute->code];
+                    $superAttributes[$superAttribute->id] = $variantData[$superAttribute->code];
+
+                    $this->fillableVariantAttributes->push($superAttribute);
                 }
 
-                $this->createVariant($product, $permutation, array_merge($variantData, [
+                $this->createVariant($product, $superAttributes, array_merge($variantData, [
                     'channel' => $data['channel'] ?? core()->getDefaultChannelCode(),
                     'locale'  => $data['locale'] ?? core()->getDefaultLocaleCodeFromDefaultChannel(),
                 ]));
@@ -365,49 +367,21 @@ class Configurable extends AbstractType
     public function prepareForCart($data)
     {
         $data['quantity'] = parent::handleQuantity((int) $data['quantity']);
-    
-        // If no selected_configurable_option is provided...
+
         if (empty($data['selected_configurable_option'])) {
-            $isWithoutPower = false;
-            if (isset($data['super_attributes']['lens_type'])) {
-                $lensTypes = $data['super_attributes']['lens_type'];
-                if (is_array($lensTypes)) {
-                    if (in_array(39, $lensTypes)) {
-                        $isWithoutPower = true;
-                    }
-                } elseif ($lensTypes == 39) {
-                    $isWithoutPower = true;
-                }
-            }
-            if (! $isWithoutPower) {
-                return trans('product::app.checkout.cart.missing-options');
-            } else {
-                // For "Without Power" lenses, automatically assign a default variant.
-                // This assumes you have a method in your product repository that can return a variant
-                // for the given configurable product that has lens_type = 39.
-                $childVariant = $this->productRepository->getVariantByAttribute(
-                    $this->product->id,
-                    'lens_type',
-                    39
-                );
-    
-                if ($childVariant) {
-                    $data['selected_configurable_option'] = $childVariant->id;
-                }
-                // If not found, you might choose to fallback to some default logic here.
-            }
+            return trans('product::app.checkout.cart.missing-options');
         }
-    
+
         $data = $this->getQtyRequest($data);
-    
+
         $childProduct = $this->productRepository->find($data['selected_configurable_option']);
-    
+
         if (! $childProduct->haveSufficientQuantity($data['quantity'])) {
             return trans('product::app.checkout.cart.inventory-warning');
         }
-    
+
         $price = $childProduct->getTypeInstance()->getFinalPrice();
-    
+
         return [
             [
                 'product_id'          => $this->product->id,
@@ -440,7 +414,6 @@ class Configurable extends AbstractType
             ],
         ];
     }
-    
 
     /**
      * Compare options.

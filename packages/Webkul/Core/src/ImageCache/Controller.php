@@ -32,8 +32,6 @@ class Controller extends ImageCacheController
      */
     public function getResponse($template, $filename)
     {
-        dd("Hit ImageCache Controller", $template, $filename);
-        \Log::info('ImageCache controller hit', ['template' => $template, 'filename' => $filename]);
         switch (strtolower($template)) {
             case 'original':
                 return $this->getOriginal($filename);
@@ -135,19 +133,4 @@ class Controller extends ImageCacheController
             'Etag'           => $eTag,
         ]);
     }
-
-    protected function getImagePath($filename)
-    {
-        $paths = config('imagecache.paths');
-        foreach ($paths as $path) {
-            $fullPath = rtrim($path, '/') . '/' . $filename;
-            Log::info('Checking file existence', ['fullPath' => $fullPath, 'exists' => file_exists($fullPath)]);
-            if (file_exists($fullPath)) {
-                return $fullPath;
-            }
-        }
-        Log::error('File not found in any configured paths', ['filename' => $filename, 'paths' => $paths]);
-        abort(404);
-    }    
-
 }

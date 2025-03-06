@@ -62,7 +62,7 @@ class ConfigurableOption
     public function getConfigurationConfig($product)
     {
         $options = $this->getOptions($product, $this->getAllowedVariants($product));
-    
+
         $config = [
             'attributes'     => $this->getAttributesData($product, $options),
             'index'          => $options['index'] ?? [],
@@ -70,21 +70,9 @@ class ConfigurableOption
             'variant_images' => $this->getVariantImages($product),
             'variant_videos' => $this->getVariantVideos($product),
         ];
-    
-        $config = array_merge($config, $product->getTypeInstance()->getProductPrices());
-    
-        // Check if the product is "Without Power"
-        // (Assuming $product->lens_type holds this value)
-        if (isset($product->lens_type) && $product->lens_type === 'Without Power') {
-            // Filter out the sphere power attributes
-            $config['attributes'] = array_values(array_filter($config['attributes'], function ($attribute) {
-                return $attribute['code'] !== 'Sphere_Power_Left_Eye'
-                    && $attribute['code'] !== 'Sphere_Power_Right_Eye';
-            }));
-        }
-    
-        return $config;
-    }    
+
+        return array_merge($config, $product->getTypeInstance()->getProductPrices());
+    }
 
     /**
      * Get allowed attributes.

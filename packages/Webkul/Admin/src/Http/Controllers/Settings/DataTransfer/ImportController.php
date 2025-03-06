@@ -477,129 +477,11 @@ class ImportController extends Controller
     /**
      * Download import error report
      */
-    public function downloadSample()
+    public function downloadSample(string $type)
     {
-        // Define the CSV header exactly as you require.
-        $header = [
-            'sku',
-            'parent_sku',
-            'locale',
-            'attribute_family_code',
-            'type',
-            'categories',
-            'images',
-            'name',
-            'description',
-            'short_description',
-            'status',
-            'visible_individually',
-            'new',
-            'featured',
-            'guest_checkout',
-            'length',
-            'width',
-            'height',
-            'weight',
-            'tax_category_name',
-            'price',
-            'cost',
-            'special_price',
-            'special_price_from',
-            'special_price_to',
-            'customer_group_prices',
-            'url_key',
-            'meta_title',
-            'meta_keywords',
-            'meta_description',
-            'manage_stock',
-            'inventories',
-            'related_skus',
-            'cross_sell_skus',
-            'up_sell_skus',
-            'configurable_variants',
-            'bundle_options',
-            'associated_skus',
-        ];
-    
-        // Retrieve your current products (adjust the query as needed).
-        $products = \Webkul\Product\Models\Product::all();
-    
-        // Open a temporary memory stream for writing CSV data.
-        $handle = fopen('php://temp', 'r+');
-    
-        // Write the CSV header row.
-        fputcsv($handle, $header);
-    
-        // Loop through each product to build CSV rows.
-        foreach ($products as $product) {
-            // Format fields that contain arrays or relations by JSON encoding them.
-            // Adjust these according to your application's data structure.
-            $categories = json_encode($product->categories); 
-            $images     = json_encode($product->images);
-            $inventories = json_encode($product->inventories);
-            $relatedSkus = json_encode($product->related_skus);
-            $crossSellSkus = json_encode($product->cross_sell_skus);
-            $upSellSkus  = json_encode($product->up_sell_skus);
-            $configurableVariants = json_encode($product->configurable_variants);
-            $bundleOptions = json_encode($product->bundle_options);
-            $customerGroupPrices = json_encode($product->customer_group_prices);
-    
-            // Build the CSV row matching the header order.
-            $row = [
-                $product->sku,
-                $product->parent_sku ?? '',
-                'en', // set the locale (or use a product attribute if available)
-                $product->attribute_family_code ?? 'default',
-                $product->type,
-                $categories,
-                $images,
-                $product->name,
-                $product->description,
-                $product->short_description,
-                $product->status,
-                $product->visible_individually,
-                $product->new,
-                $product->featured,
-                $product->guest_checkout,
-                $product->length,
-                $product->width,
-                $product->height,
-                $product->weight,
-                $product->tax_category_name,
-                $product->price,
-                $product->cost,
-                $product->special_price,
-                $product->special_price_from,
-                $product->special_price_to,
-                $customerGroupPrices,
-                $product->url_key,
-                $product->meta_title,
-                $product->meta_keywords,
-                $product->meta_description,
-                $product->manage_stock,
-                $inventories,
-                $relatedSkus,
-                $crossSellSkus,
-                $upSellSkus,
-                $configurableVariants,
-                $bundleOptions,
-                $product->associated_skus, // if this is an array, you might also JSON-encode it
-            ];
-    
-            // Write the row to the CSV stream.
-            fputcsv($handle, $row);
-        }
-    
-        // Reset the stream's position to the beginning.
-        rewind($handle);
-        $csvContent = stream_get_contents($handle);
-        fclose($handle);
-    
-        // Return the CSV file as a downloadable response.
-        return response($csvContent, 200, [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="product-list.csv"',
-        ]);
+        $importer = config('importers.'.$type);
+
+        return Storage::download($importer['sample_path']);
     }
 
     /**
@@ -619,6 +501,6 @@ class ImportController extends Controller
     {
         $import = $this->importRepository->findOrFail($id);
 
-        return Storage::disk('private')->download($import->error_file_path);
+        return Storage::disk('private')->download($import->error_file_path ?? $import->file_path);
     }
 }

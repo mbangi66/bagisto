@@ -5,6 +5,7 @@
         <x-shop::layouts.header.desktop.top />
     </div>
 @endif
+
 <header class="shadow-gray sticky top-0 z-10 bg-white shadow-sm max-lg:shadow-none">
     <x-shop::layouts.header.desktop />
 

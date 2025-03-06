@@ -25,9 +25,8 @@ class Review
      */
     public function getAverageRating($product)
     {
-        $average = $product->reviews->where('status', 'approved')->avg('rating') ?? 0;
-        return number_format(round($average, 2), 1);
-    }    
+        return number_format(round($product->reviews->where('status', 'approved')->avg('rating'), 2), 1);
+    }
 
     /**
      * Returns the total review of the product

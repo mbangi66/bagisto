@@ -69,7 +69,7 @@ class CoreServiceProvider extends ServiceProvider
          * Image Cache route
          */
         if (is_string(config('imagecache.route'))) {
-            $filenamePattern = '.+';
+            $filenamePattern = '[ \w\\.\\/\\-\\@\(\)\=]+';
 
             /**
              * Route to access template applied image file
@@ -77,7 +77,7 @@ class CoreServiceProvider extends ServiceProvider
             $this->app['router']->get(config('imagecache.route').'/{template}/{filename}', [
                 'uses' => 'Webkul\Core\ImageCache\Controller@getResponse',
                 'as'   => 'imagecache',
-                ])->where('filename', '(.*)');
+            ])->where(['filename' => $filenamePattern]);
         }
     }
 

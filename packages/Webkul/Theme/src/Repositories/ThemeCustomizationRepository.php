@@ -4,8 +4,8 @@ namespace Webkul\Theme\Repositories;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
 use Webkul\Core\Eloquent\Repository;
 use Webkul\Theme\Contracts\ThemeCustomization;
 
@@ -20,11 +20,10 @@ class ThemeCustomizationRepository extends Repository
     }
 
     /**
-     * Update the specified theme.
+     * Update the specified theme
      *
      * @param  array  $data
      * @param  int  $id
-     * @return ThemeCustomization
      */
     public function update($data, $id): ThemeCustomization
     {
@@ -49,10 +48,22 @@ class ThemeCustomizationRepository extends Repository
     }
 
     /**
-     * Upload images.
+     * Mass update the status of themes in the repository.
      *
-     * @param array $data
-     * @param ThemeCustomization $theme
+     * This method updates multiple records in the database based on the provided
+     * theme IDs.
+     *
+     * @param  int  $themeIds
+     * @return int The number of records updated.
+     */
+    public function massUpdateStatus(array $data, array $themeIds)
+    {
+        return $this->model->whereIn('id', $themeIds)->update($data);
+    }
+
+    /**
+     * Upload images
+     *
      * @return void|string
      */
     public function uploadImage(array $data, ThemeCustomization $theme)
@@ -66,7 +77,6 @@ class ThemeCustomizationRepository extends Repository
         }
 
         if (! isset($data[$locale]['options'])) {
-            Log::info('No options found for image upload.', ['locale' => $locale]);
             return;
         }
 
@@ -81,40 +91,27 @@ class ThemeCustomizationRepository extends Repository
                 ];
             } elseif ($image['image'] instanceof UploadedFile) {
                 try {
-                    Log::info('Uploading slider image directly.', [
-                        'original_name' => $image['image']->getClientOriginalName(),
-                    ]);
+                    $manager = new ImageManager;
 
-                    // Save the file directly without conversion/caching
-                    $path = Storage::putFile('theme/' . $theme->id, $image['image']);
+                    $path = 'theme/'.$theme->id.'/'.Str::random(40).'.webp';
 
-                    Log::info('Image uploaded successfully.', [
-                        'path' => $path,
-                    ]);
+                    Storage::put($path, $manager->make($image['image'])->encode('webp'));
                 } catch (\Exception $e) {
-                    Log::error('Image upload error during slider upload.', [
-                        'error' => $e->getMessage(),
-                    ]);
-
                     session()->flash('error', $e->getMessage());
+
                     return redirect()->back();
                 }
 
-                // For static content, return the URL immediately
                 if (($data['type'] ?? '') == 'static_content') {
                     return Storage::url($path);
                 }
 
-                // Store the direct URL (without a cache prefix)
                 $options['images'][] = [
-                    'image' => Storage::url($path),
+                    'image' => 'storage/'.$path,
                     'link'  => $image['link'],
                     'title' => $image['title'],
                 ];
             } else {
-                Log::warning('Image upload not triggered for slider; image data is not an UploadedFile.', [
-                    'image_data' => $image,
-                ]);
                 $options['images'][] = $image;
             }
         }
@@ -123,11 +120,5 @@ class ThemeCustomizationRepository extends Repository
         $translatedModel->options = $options ?? [];
         $translatedModel->theme_customization_id = $theme->id;
         $translatedModel->save();
-
-        Log::info('Theme customization options updated.', [
-            'theme_id' => $theme->id,
-            'locale'   => $locale,
-            'options'  => $options,
-        ]);
     }
 }

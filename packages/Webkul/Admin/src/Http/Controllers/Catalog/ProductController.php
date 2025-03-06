@@ -15,13 +15,13 @@ use Webkul\Admin\Http\Resources\AttributeResource;
 use Webkul\Admin\Http\Resources\ProductResource;
 use Webkul\Attribute\Repositories\AttributeFamilyRepository;
 use Webkul\Core\Rules\Slug;
+use Webkul\Customer\Repositories\CustomerRepository;
 use Webkul\Product\Helpers\ProductType;
 use Webkul\Product\Repositories\ProductAttributeValueRepository;
 use Webkul\Product\Repositories\ProductDownloadableLinkRepository;
 use Webkul\Product\Repositories\ProductDownloadableSampleRepository;
 use Webkul\Product\Repositories\ProductInventoryRepository;
 use Webkul\Product\Repositories\ProductRepository;
-use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -42,6 +42,7 @@ class ProductController extends Controller
         protected ProductDownloadableSampleRepository $productDownloadableSampleRepository,
         protected ProductInventoryRepository $productInventoryRepository,
         protected ProductRepository $productRepository,
+        protected CustomerRepository $customerRepository,
     ) {}
 
     /**
@@ -85,9 +86,6 @@ class ProductController extends Controller
      */
     public function store()
     {
-        $data = request()->all();
-        Log::debug('Product store request received', $data);
-    
         $this->validate(request(), [
             'type'                => 'required',
             'attribute_family_id' => 'required',
@@ -95,81 +93,42 @@ class ProductController extends Controller
             'super_attributes'    => 'array|min:1',
             'super_attributes.*'  => 'array|min:1',
         ]);
-    
-        // Get the super_attributes from the request
-        $superAttributes = request()->input('super_attributes', []);
-        Log::debug('Super Attributes:', $superAttributes);
-    
-        if (ProductType::hasVariants(request()->input('type'))) {
-            Log::debug('Product is configurable, checking variant attributes...');
-    
-            if (isset($superAttributes['lens_type'])) {
-                $lensTypeValues = $superAttributes['lens_type'];
-    
-                // Only modify if there is a single lens_type value.
-                if (is_array($lensTypeValues) && count($lensTypeValues) === 1) {
-                    $selectedLensType = reset($lensTypeValues);
-                    Log::debug('Selected Lens Type attribute (single value)', ['lens_type' => $selectedLensType]);
-    
-                    // If the only selected lens type is "Without Power" (value 39)
-                    if ($selectedLensType == '39' || $selectedLensType == 39) {
-                        Log::debug("Lens type is 'Without Power' detected; unsetting power-related attributes.");
-                        unset($superAttributes['sphere_power']);
-                        unset($superAttributes['two_different_powers']);
-                        unset($superAttributes['Sphere_Power_Left_Eye']);
-                        unset($superAttributes['Sphere_Power_Right_Eye']);
-                    }
-                    // Overwrite lens_type to be a single-value array.
-                    $superAttributes['lens_type'] = [$selectedLensType];
-                    $data['super_attributes'] = $superAttributes;
-                    request()->merge(['super_attributes' => $superAttributes]);
-                } else {
-                    // If there are multiple lens_type values, we leave them intact
-                    Log::debug('Multiple lens_type values detected, leaving them intact.', ['lens_type' => $lensTypeValues]);
-                }
-            } else {
-                Log::debug('Lens Type attribute (key "lens_type") is not set in super_attributes.');
-            }
-        }
-    
-        // If no super_attributes are provided, return configurable attribute values
+
         if (
             ProductType::hasVariants(request()->input('type'))
             && ! request()->has('super_attributes')
         ) {
             $configurableFamily = $this->attributeFamilyRepository
                 ->find(request()->input('attribute_family_id'));
-    
+
             return new JsonResponse([
                 'data' => [
                     'attributes' => AttributeResource::collection($configurableFamily->configurable_attributes),
                 ],
             ]);
         }
-    
+
         Event::dispatch('catalog.product.create.before');
-    
-        $product = $this->productRepository->create(collect($data)->only([
+
+        $product = $this->productRepository->create(request()->only([
             'type',
             'attribute_family_id',
             'sku',
             'super_attributes',
             'family',
-        ])->toArray());
-    
+        ]));
+
         Event::dispatch('catalog.product.create.after', $product);
-    
+
         session()->flash('success', trans('admin::app.catalog.products.create-success'));
-    
-        Log::debug('Product created successfully', $product->toArray());
-    
+
         return new JsonResponse([
             'data' => [
                 'redirect_url' => route('admin.catalog.products.edit', $product->id),
             ],
         ]);
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -190,23 +149,15 @@ class ProductController extends Controller
     public function update(ProductForm $request, int $id)
     {
         Event::dispatch('catalog.product.update.before', $id);
-    
-        // 1. Get all the request data
-        $data = request()->all();
-    
-        // 2. Force guest_checkout to "1"
-        //    (Using string "1" here because your validation is 'in:0,1')
-        $data['guest_checkout'] = '1';
-    
-        // 3. Update the product with the modified data
-        $product = $this->productRepository->update($data, $id);
-    
+
+        $product = $this->productRepository->update(request()->all(), $id);
+
         Event::dispatch('catalog.product.update.after', $product);
-    
+
         session()->flash('success', trans('admin::app.catalog.products.update-success'));
-    
+
         return redirect()->route('admin.catalog.products.index');
-    }    
+    }
 
     /**
      * Update inventories.
@@ -372,8 +323,6 @@ class ProductController extends Controller
      */
     public function search()
     {
-        $results = [];
-
         $searchEngine = 'database';
 
         if (
@@ -387,14 +336,23 @@ class ProductController extends Controller
             })->toArray();
         }
 
+        $channelId = $this->customerRepository->find(request('customer_id'))->channel_id ?? null;
+
+        $params = [
+            'index'      => $indexNames ?? null,
+            'name'       => request('query'),
+            'sort'       => 'created_at',
+            'order'      => 'desc',
+            'channel_id' => $channelId,
+        ];
+
+        if (request()->has('type')) {
+            $params['type'] = request('type');
+        }
+
         $products = $this->productRepository
             ->setSearchEngine($searchEngine)
-            ->getAll([
-                'index' => $indexNames ?? null,
-                'name'  => request('query'),
-                'sort'  => 'created_at',
-                'order' => 'desc',
-            ]);
+            ->getAll($params);
 
         return ProductResource::collection($products);
     }

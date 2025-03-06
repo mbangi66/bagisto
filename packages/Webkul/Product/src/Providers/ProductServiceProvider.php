@@ -11,8 +11,6 @@ use Webkul\Product\Models\ProductProxy;
 use Webkul\Product\Observers\ProductObserver;
 use Webkul\Product\ProductImage;
 use Webkul\Product\ProductVideo;
-use Webkul\Product\Models\Product;
-use Webkul\Product\Observers\ProductVariantObserver;
 
 class ProductServiceProvider extends ServiceProvider
 {
@@ -30,7 +28,6 @@ class ProductServiceProvider extends ServiceProvider
         $this->app->register(EventServiceProvider::class);
 
         ProductProxy::observe(ProductObserver::class);
-        ProductProxy::observe(ProductVariantObserver::class);
     }
 
     /**

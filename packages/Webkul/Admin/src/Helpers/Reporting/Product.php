@@ -324,46 +324,35 @@ class Product extends AbstractReporting
     public function getTotalSoldQuantitiesOverTime($startDate, $endDate, $period = 'auto'): array
     {
         $config = $this->getTimeInterval($startDate, $endDate, $period);
-    
-        // Define base table names (without prefix)
-        $orderItemsBase = 'order_items';
-        $ordersBase     = 'orders';
-    
-        // Get the table prefix (e.g. "lens")
-        $tablePrefix = DB::getTablePrefix();
-    
-        // Manually build the full table names
-        $orderItemsFull = $tablePrefix . $orderItemsBase; // e.g. "lensorder_items"
-        $ordersFull     = $tablePrefix . $ordersBase;     // e.g. "lensorders"
-    
-        // Build the query using raw expressions for the aliasing and column references
+
+        $groupColumn = str_replace('created_at', 'order_items.created_at', $config['group_column']);
+
         $results = $this->orderItemRepository
             ->resetModel()
-            ->from(DB::raw("`{$orderItemsFull}` as oi"))
-            ->leftJoin(DB::raw("`{$ordersFull}` as orders"), 'oi.order_id', '=', 'orders.id')
+            ->leftJoin('orders', 'order_items.order_id', '=', 'orders.id')
             ->select(
-                DB::raw("DAYOFYEAR(orders.created_at) AS date"),
+                DB::raw("$groupColumn AS date"),
                 DB::raw('COUNT(*) AS total')
             )
-            ->whereIn(DB::raw("orders.channel_id"), $this->channelIds)
-            ->whereBetween(DB::raw("orders.created_at"), [$startDate, $endDate])
+            ->whereIn('channel_id', $this->channelIds)
+            ->whereBetween('order_items.created_at', [$startDate, $endDate])
             ->groupBy('date')
             ->get();
-    
+
         $stats = [];
-    
+
         foreach ($config['intervals'] as $interval) {
             $total = $results->where('date', $interval['filter'])->first();
-    
+
             $stats[] = [
                 'label' => $interval['start'],
                 'total' => $total?->total ?? 0,
             ];
         }
-    
+
         return $stats;
     }
-    
+
     /**
      * Returns products added to wishlist over time
      *

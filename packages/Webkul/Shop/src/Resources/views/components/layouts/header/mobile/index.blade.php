@@ -18,7 +18,7 @@
                             <img
                                 src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
                                 alt="{{ config('app.name') }}"
-                                width="110"
+                                width="131"
                                 height="29"
                             >
                         </a>
@@ -271,14 +271,12 @@
     {!! view_render_event('bagisto.shop.components.layouts.header.mobile.search.before') !!}
     <div class="w-full flex items-center p-4 gap-4">
         <!-- Order Now Button -->
-        @if (Request::is('/'))
-            <a 
-                href="{{ route('shop.home.index') }}"
-                class="inline-flex text-white items-center rounded-xl bg-black px-7 py-2.5 font-medium hover:bg-gray-800 max-md:px-5 max-md:text-xs max-sm:rounded-lg max-sm:px-4 max-sm:py-2"
-            >
-                Order Now
-            </a>
-        @endif
+        <a 
+            href="{{ route('shop.home.index') }}"
+            class="inline-flex text-white items-center rounded-xl bg-black px-7 py-2.5 font-medium hover:bg-gray-800 max-md:px-5 max-md:text-xs max-sm:rounded-lg max-sm:px-4 max-sm:py-2"
+        >
+            Order Now
+        </a>
 
         <!-- Search Catalog Form -->
         <form action="{{ route('shop.search.index') }}" class="flex items-center flex-1">

@@ -245,6 +245,10 @@ class Bundle extends AbstractType
         foreach ($this->getCartChildProducts($data) as $productId => $data) {
             $product = $this->productRepository->find($productId);
 
+            if ($product->type !== 'simple') {
+                return trans('product::app.checkout.cart.selected-products-simple');
+            }
+
             /* need to check each individual quantity as well if don't have then show error */
             if (! $product->getTypeInstance()->haveSufficientQuantity($data['quantity'] * $bundleQuantity)) {
                 return trans('product::app.checkout.cart.inventory-warning');
@@ -263,9 +267,6 @@ class Bundle extends AbstractType
             }
 
             $cartProduct[0]['parent_id'] = $this->product->id;
-            $cartProduct[0]['quantity'] = $data['quantity'];
-            $cartProduct[0]['total_weight'] = $cartProduct[0]['weight'] * $data['quantity'];
-            $cartProduct[0]['base_total_weight'] = $cartProduct[0]['weight'] * $data['quantity'];
 
             $products = array_merge($products, $cartProduct);
 
@@ -277,10 +278,10 @@ class Bundle extends AbstractType
             $products[0]['total_incl_tax'] += $cartProduct[0]['total'];
             $products[0]['base_total'] += $cartProduct[0]['base_total'];
             $products[0]['base_total_incl_tax'] += $cartProduct[0]['base_total'];
-            $products[0]['weight'] += ($cartProduct[0]['weight'] * $products[0]['quantity']);
-            $products[0]['total_weight'] += ($cartProduct[0]['total_weight'] * $products[0]['quantity']);
-            $products[0]['base_total_weight'] += ($cartProduct[0]['base_total_weight'] * $products[0]['quantity']);
+            $products[0]['weight'] += $cartProduct[0]['total_weight'];
         }
+
+        $products[0]['total_weight'] = $products[0]['base_total_weight'] = $products[0]['weight'] * $products[0]['quantity'];
 
         return $products;
     }
@@ -549,5 +550,33 @@ class Bundle extends AbstractType
     public function getPriceIndexer()
     {
         return app(BundleIndexer::class);
+    }
+
+    /**
+     * Returns validation rules.
+     *
+     * @return array
+     */
+    public function getTypeValidationRules()
+    {
+        return [
+            'bundle_options' => 'array',
+            'bundle_options' => function ($attribute, $value, $fail) {
+                $associatedProductIds = collect($value)
+                    ->pluck('products')
+                    ->flatten(1)
+                    ->pluck('product_id')
+                    ->toArray();
+
+                $products = $this->productRepository->findWhereIn('id', $associatedProductIds)
+                    ->pluck('type')
+                    ->filter(fn ($type) => $type !== 'simple')
+                    ->count();
+
+                if ($products) {
+                    $fail(trans('product::app.checkout.cart.selected-products-simple'));
+                }
+            },
+        ];
     }
 }

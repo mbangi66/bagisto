@@ -11,7 +11,6 @@ use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Shipping\Facades\Shipping;
 use Webkul\Shop\Http\Resources\CartResource;
 use Webkul\Shop\Http\Resources\ProductResource;
-use Illuminate\Support\Facades\Log;
 
 class CartController extends APIController
 {
@@ -202,32 +201,29 @@ class CartController extends APIController
         $validatedData = $this->validate(request(), [
             'code' => 'required',
         ]);
-    
+
         try {
             if (strlen($validatedData['code'])) {
-    
                 $coupon = $this->cartRuleCouponRepository->findOneByField('code', $validatedData['code']);
-    
-                if (!$coupon) {
+
+                if (! $coupon) {
                     return (new JsonResource([
                         'data'     => new CartResource(Cart::getCart()),
                         'message'  => trans('Coupon not found.'),
                     ]))->response()->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
                 }
-    
+
                 if ($coupon->cart_rule->status) {
-    
                     if (Cart::getCart()->coupon_code == $validatedData['code']) {
                         return (new JsonResource([
                             'data'     => new CartResource(Cart::getCart()),
                             'message'  => trans('shop::app.checkout.coupon.already-applied'),
                         ]))->response()->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
                     }
-    
+
                     Cart::setCouponCode($validatedData['code'])->collectTotals();
-    
+
                     if (Cart::getCart()->coupon_code == $validatedData['code']) {
-    
                         return new JsonResource([
                             'data'     => new CartResource(Cart::getCart()),
                             'message'  => trans('shop::app.checkout.coupon.success-apply'),
@@ -241,14 +237,12 @@ class CartController extends APIController
                 ]))->response()->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         } catch (\Exception $e) {
-            Log::error('Exception in coupon application', ['error' => $e->getMessage()]);
             return (new JsonResource([
                 'data'    => new CartResource(Cart::getCart()),
                 'message' => trans('shop::app.checkout.coupon.error'),
             ]))->response()->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
 
     /**
      * Remove applied coupon from the cart.

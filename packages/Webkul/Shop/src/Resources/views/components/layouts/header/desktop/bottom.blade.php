@@ -9,7 +9,17 @@
     <div class="flex items-center gap-x-10 max-[1180px]:gap-x-5">
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.before') !!}
 
-       
+        {{-- <a
+            href="{{ route('shop.home.index') }}"
+            aria-label="@lang('shop::app.components.layouts.header.bagisto')"
+        >
+            <img
+                src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
+                width="131"
+                height="29"
+                alt="{{ config('app.name') }}"
+            >
+        </a> --}}
 
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.after') !!}
 
@@ -166,7 +176,7 @@
                             </p>
                         </div>
 
-                        <p class="py-2px mt-3 w-full border border-zinc-200"></p>
+                        <p class="mt-3 w-full border border-zinc-200"></p>
 
                         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.customers_action.before') !!}
                         
@@ -208,7 +218,7 @@
                             </p>
                         </div>
 
-                        <p class="py-2px mt-3 w-full border border-zinc-200"></p>
+                        <p class="mt-3 w-full border border-zinc-200"></p>
 
                         <div class="mt-2.5 grid gap-1 pb-2.5">
                             {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile_dropdown.links.before') !!}
@@ -265,148 +275,124 @@
 </div>
 
 @pushOnce('scripts')
-<script type="text/x-template" id="v-desktop-category-template">
-  <div class="relative group"
-       @mouseleave="startHideDropdown"
-       @mouseenter="cancelHideDropdown">
-    
-    <!-- Top Navigation: Parent Categories -->
-    <div class="flex items-center gap-5">
-      <div v-for="parent in parentCategories"
-           :key="parent.id"
-           class="group relative"
-           @mouseenter="setActiveParent(parent)">
-        <a :href="parent.url" class="px-5 uppercase text-black font-semibold">
-          @{{ parent.name }}
-        </a>
-      </div>
-    </div>
+    <script
+        type="text/x-template"
+        id="v-desktop-category-template"
+    >
+        <div
+            class="flex items-center gap-5"
+            v-if="isLoading"
+        >
+            <span
+                class="shimmer h-6 w-20 rounded"
+                role="presentation"
+            ></span>
 
-    <!-- Dropdown Container -->
-    <div v-if="dropdownVisible && activeParent && activeParent.children && activeParent.children.length"
-         class="fixed left-0 top-full h-full w-full bg-white shadow-lg z-50 border border-gray-200 rounded-lg overflow-hidden">
-      
-      <div class="flex w-full justify-between bg-white p-3">
-        <!-- Left: Category Links -->
-        <div class="w-2/3 p-5 bg-gray-50">
-          <ul class="p-5 bg-gray-50">
-            <li v-for="child in activeParent.children"
-                :key="child.id"
-                class="py-2 border-b last:border-b-0">
-              <div class="flex items-center justify-between">
-                <a :href="child.url"
-                  class="text-gray-700 font-small"
-                  @mouseenter="setActiveChild(child)">
-                  @{{ child.name }}
-                </a>
-                <!-- Arrow Icon only for children that have their own children -->
-                <button v-if="child.children && child.children.length"
-                        @click.stop="toggleGrandchildren(child)"
-                        class="focus:outline-none">
-                  <svg 
-                    :style="expandedChildId === child.id ? 'transform: rotate(180deg); transition: transform 0.2s ease;' : 'transform: rotate(0deg); transition: transform 0.2s ease;'" 
-                    class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
-              </div>
-              <!-- Grandchildren list placed below the child item -->
-              <ul v-if="expandedChildId === child.id" class="pl-4 mt-2">
-                <li v-for="grandchild in child.children"
-                    :key="grandchild.id"
-                    class="py-1">
-                  <a :href="grandchild.url" class="text-gray-600">
-                    @{{ grandchild.name }}
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
+            <span
+                class="shimmer h-6 w-20 rounded"
+                role="presentation"
+            ></span>
+
+            <span
+                class="shimmer h-6 w-20 rounded"
+                role="presentation"
+            ></span>
         </div>
 
-        <!-- Right: Image Box -->
-        <div class="flex bg-white p-3">
-          <template v-if="activeChild && activeChild.banner_url">
-            <img :src="activeChild.banner_url"
-                 :alt="activeChild.name"
-                 class="w-[400px] h-[300px] object-cover rounded-lg shadow-md">
-          </template>
-          <template v-else>
-            <div class="text-gray-500 text-sm">No Image</div>
-          </template>
+        <div
+            class="flex items-center"
+            v-else
+        >
+            <div
+                class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue"
+                v-for="category in categories"
+            >
+                <span>
+                    <a
+                        :href="category.url"
+                        class="inline-block px-5 uppercase"
+                    >
+                        @{{ category.name }}
+                    </a>
+                </span>
+
+                <div
+                    class="pointer-events-none absolute top-[78px] z-[1] max-h-[580px] w-max max-w-[1260px] translate-y-1 overflow-auto overflow-x-auto border border-b-0 border-l-0 border-r-0 border-t border-[#F3F3F3] bg-white p-9 opacity-0 shadow-[0_6px_6px_1px_rgba(0,0,0,.3)] transition duration-300 ease-out group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-hover:duration-200 group-hover:ease-in ltr:-left-9 rtl:-right-9"
+                    v-if="category.children.length"
+                >
+                    <div class="aigns flex justify-between gap-x-[70px]">
+                        <div
+                            class="grid w-full min-w-max max-w-[150px] flex-auto grid-cols-[1fr] content-start gap-5"
+                            v-for="pairCategoryChildren in pairCategoryChildren(category)"
+                        >
+                            <template v-for="secondLevelCategory in pairCategoryChildren">
+                                <p class="font-medium text-navyBlue">
+                                    <a :href="secondLevelCategory.url">
+                                        @{{ secondLevelCategory.name }}
+                                    </a>
+                                </p>
+
+                                <ul
+                                    class="grid grid-cols-[1fr] gap-3"
+                                    v-if="secondLevelCategory.children.length"
+                                >
+                                    <li
+                                        class="text-sm font-medium text-zinc-500"
+                                        v-for="thirdLevelCategory in secondLevelCategory.children"
+                                    >
+                                        <a :href="thirdLevelCategory.url">
+                                            @{{ thirdLevelCategory.name }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-</script>
+    </script>
 
-<script type="module">
-  app.component('v-desktop-category', {
-    template: '#v-desktop-category-template',
+    <script type="module">
+        app.component('v-desktop-category', {
+            template: '#v-desktop-category-template',
 
-    data() {
-      return {
-        parentCategories: [],
-        activeParent: null,
-        activeChild: null,
-        dropdownVisible: false,
-        hideTimeout: null,
-        expandedChildId: null, // tracks which child has its grandchildren visible
-      }
-    },
+            data() {
+                return  {
+                    isLoading: true,
 
-    mounted() {
-      this.getParentCategories();
-    },
+                    categories: [],
+                }
+            },
 
-    methods: {
-      getParentCategories() {
-        this.$axios.get("{{ route('shop.api.categories.tree') }}")
-          .then(response => {
-            this.parentCategories = response.data.data;
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      },
+            mounted() {
+                this.get();
+            },
 
-      setActiveParent(parent) {
-        this.activeParent = parent;
-        this.activeChild = parent.children.length ? parent.children[0] : null;
-        this.dropdownVisible = true;
-        // Reset expanded child when switching parent
-        this.expandedChildId = null;
-        this.cancelHideDropdown();
-      },
+            methods: {
+                get() {
+                    this.$axios.get("{{ route('shop.api.categories.tree') }}")
+                        .then(response => {
+                            this.isLoading = false;
 
-      setActiveChild(child) {
-        this.activeChild = child;
-        this.cancelHideDropdown();
-      },
+                            this.categories = response.data.data;
+                        }).catch(error => {
+                            console.log(error);
+                        });
+                },
 
-      toggleGrandchildren(child) {
-        // Toggle display of grandchildren menu for the clicked child
-        if (this.expandedChildId === child.id) {
-          this.expandedChildId = null;
-        } else {
-          this.expandedChildId = child.id;
-        }
-      },
+                pairCategoryChildren(category) {
+                    return category.children.reduce((result, value, index, array) => {
+                        if (index % 2 === 0) {
+                            result.push(array.slice(index, index + 2));
+                        }
 
-      startHideDropdown() {
-        this.hideTimeout = setTimeout(() => {
-          this.dropdownVisible = false;
-          this.expandedChildId = null;
-        }, 200);
-      },
-
-      cancelHideDropdown() {
-        clearTimeout(this.hideTimeout);
-      },
-    },
-  });
-</script>
-
+                        return result;
+                    }, []);
+                }
+            },
+        });
+    </script>
 @endPushOnce
 
 {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.after') !!}

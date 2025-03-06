@@ -14,7 +14,7 @@
             <div style="padding: 30px;">
                 <!-- Email Header -->
                 <div style="margin-bottom: 65px;">
-                    <a href="{{ route('shop.home.lending') }}">
+                    <a href="{{ route('shop.home.index') }}">
                         @if ($logo = core()->getConfigData('general.design.admin_logo.logo_image'))
                             <img
                                 src="{{ Storage::url($logo) }}"

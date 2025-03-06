@@ -80,7 +80,7 @@ class SystemConfig
                 icon: $configItem['icon'] ?? null,
                 info: trans($configItem['info']) ?? null,
                 key: $configItem['key'],
-                name: trans($configItem['name']),
+                name: $this->resolveName($configItem['name']),
                 route: $configItem['route'] ?? null,
                 sort: $configItem['sort'],
             ));
@@ -104,7 +104,7 @@ class SystemConfig
                     icon: $subConfigItem['icon'] ?? null,
                     info: isset($subConfigItem['info']) ? trans($subConfigItem['info']) : null,
                     key: $subConfigItem['key'],
-                    name: trans($subConfigItem['name']),
+                    name: $this->resolveName($subConfigItem['name']),
                     route: $subConfigItem['route'] ?? null,
                     sort: $subConfigItem['sort'] ?? null,
                 );
@@ -228,4 +228,32 @@ class SystemConfig
 
         return $coreConfig->value;
     }
+
+    /**
+     * Resolve the configuration "name" value into a string.
+     *
+     * @param mixed $nameConfig
+     * @return string
+     */
+    private function resolveName($nameConfig): string
+    {
+        // If name config is an array, try to get the value for the current locale
+        if (is_array($nameConfig)) {
+            $resolved = $nameConfig[app()->getLocale()] ?? implode(' ', $nameConfig);
+        } else {
+            $resolved = $nameConfig;
+        }
+
+        // Use the __() helper to translate; __() returns a string if the translation exists,
+        // but may return an array if the translation file returns an array.
+        $translated = __($resolved);
+
+        // If translation returns an array, convert it to a string
+        if (is_array($translated)) {
+            return implode(' ', $translated);
+        }
+
+        return $translated;
+    }
+
 }

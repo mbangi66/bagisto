@@ -97,11 +97,21 @@ class CartRuleDataGrid extends DataGrid
         ]);
 
         $this->addColumn([
-            'index'      => 'status',
-            'label'      => trans('admin::app.marketing.promotions.cart-rules.index.datagrid.status'),
-            'type'       => 'boolean',
-            'searchable' => true,
-            'filterable' => true,
+            'index'              => 'status',
+            'label'              => trans('admin::app.marketing.promotions.cart-rules.index.datagrid.status'),
+            'type'               => 'boolean',
+            'searchable'         => true,
+            'filterable'         => true,
+            'filterable_options' => [
+                [
+                    'label' => trans('admin::app.marketing.promotions.cart-rules.index.datagrid.active'),
+                    'value' => 1,
+                ],
+                [
+                    'label' => trans('admin::app.marketing.promotions.cart-rules.index.datagrid.inactive'),
+                    'value' => 0,
+                ],
+            ],
             'sortable'   => true,
             'closure'    => function ($value) {
                 if ($value->status == 1) {
@@ -110,7 +120,7 @@ class CartRuleDataGrid extends DataGrid
                     return trans('admin::app.marketing.promotions.cart-rules.index.datagrid.inactive');
                 }
 
-                return trans('admin::app.marketing.promotions.cart-rules.index.datagrid.draft');
+                return trans('admin::app.marketing.promotions.cart-rules.index.datagrid.inactive');
             },
         ]);
 

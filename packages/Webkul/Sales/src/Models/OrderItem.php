@@ -17,8 +17,6 @@ class OrderItem extends Model implements OrderItemContract
 {
     use HasFactory;
 
-    protected $table = 'order_items';
-
     /**
      * Define the guarded property.
      *

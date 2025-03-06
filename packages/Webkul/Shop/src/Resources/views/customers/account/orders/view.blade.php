@@ -17,6 +17,8 @@
     </div>
 
     <div class="mx-4 flex-auto max-md:mx-6 max-sm:mx-4">
+
+        <!-- Cancel and Reorder buttons -->
         <div class="flex items-center justify-between">
             <div class="max-md:flex max-md:items-center">
                 <!-- Back Button For mobile view -->
@@ -97,6 +99,7 @@
                             {{ core()->formatDate($order->created_at, 'd M Y') }}
                         </div>
 
+                        <!-- Order Details -->
                         <div class="relative mt-8 overflow-x-auto rounded-xl border">
                             <table class="w-full text-left">
                                 <thead class="border-b border-zinc-200 bg-zinc-100 text-sm text-black">
@@ -209,10 +212,15 @@
                             </table>
                         </div>
 
+                        <!-- Payment Details -->
                         <div class="mt-8 flex items-start gap-10 max-lg:gap-5">
                             <div class="flex-auto">
                                 <div class="flex justify-end">
                                     <div class="grid max-w-max gap-2 text-sm">
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.subtotal.before') !!}
+
+                                        <!-- Sub Total -->
                                         @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
                                             <div class="flex w-full justify-between gap-x-5">
                                                 @lang('shop::app.customers.account.orders.view.information.subtotal')
@@ -246,7 +254,12 @@
                                                 </p>
                                             </div>
                                         @endif
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.subtotal.after') !!}
     
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.shipping.before') !!}
+
+                                        <!-- Shipping And Handling -->
                                         @if ($order->haveStockableItems())
                                             @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                                                 <div class="flex w-full justify-between gap-x-5">
@@ -282,7 +295,12 @@
                                                 </div>
                                             @endif
                                         @endif
-    
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.shipping.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.tax-amount.before') !!}
+
+                                        <!-- Tax Amount -->
                                         <div class="flex w-full justify-between gap-x-5">
                                             @lang('shop::app.customers.account.orders.view.information.tax')
     
@@ -290,7 +308,12 @@
                                                 {{ core()->formatPrice($order->tax_amount, $order->order_currency_code) }}
                                             </p>
                                         </div>
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.tax-amount.after') !!}
     
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.discount.before') !!}
+
+                                        <!-- Discount Details -->
                                         @if ($order->base_discount_amount > 0)
                                             <div class="flex w-full justify-between gap-x-5">
                                                 <p>
@@ -306,7 +329,12 @@
                                                 </p>
                                             </div>
                                         @endif
-    
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.discount.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.grand-total.before') !!}
+
+                                        <!-- Grand Total -->
                                         <div class="flex w-full justify-between gap-x-5 font-semibold">
                                             @lang('shop::app.customers.account.orders.view.information.grand-total')
     
@@ -314,7 +342,12 @@
                                                 {{ core()->formatPrice($order->grand_total, $order->order_currency_code) }}
                                             </p>
                                         </div>
-    
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.grand-total.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-paid.before') !!}
+
+                                        <!-- Total Paid -->                                        
                                         <div class="flex w-full justify-between gap-x-5">
                                             @lang('shop::app.customers.account.orders.view.information.total-paid')
     
@@ -322,7 +355,12 @@
                                                 {{ core()->formatPrice($order->grand_total_invoiced, $order->order_currency_code) }}
                                             </p>
                                         </div>
-    
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-paid.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-refunded.before') !!}
+
+                                        <!-- Total Refunded -->
                                         <div class="flex w-full justify-between gap-x-5">
                                             @lang('shop::app.customers.account.orders.view.information.total-refunded')
     
@@ -330,7 +368,12 @@
                                                 {{ core()->formatPrice($order->grand_total_refunded, $order->order_currency_code) }}
                                             </p>
                                         </div>
-                                        
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-refunded.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-due.before') !!}
+
+                                        <!-- Total Due -->
                                         <div class="flex w-full justify-between gap-x-5">
                                             @lang('shop::app.customers.account.orders.view.information.total-due')
     
@@ -342,6 +385,9 @@
                                                 @endif
                                             </p>
                                         </div>
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-due.after') !!}
+
                                     </div>
                                 </div>
                             </div>
@@ -394,6 +440,7 @@
                                 </div>
                             </div>
 
+                            <!-- Reorder and Cancel Button -->
                             <div class="flex w-full justify-center rounded-b-lg border-t text-center">
                                 @if ($order->canReorder())
                                     <a
@@ -600,6 +647,9 @@
                             </div>
 
                             <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.subtotal.before') !!}
+
                                 @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
                                     <div class="flex w-full justify-between gap-x-5">
                                         <p class="text-zinc-500">
@@ -642,6 +692,10 @@
                                         </p>
                                     </div>
                                 @endif
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.subtotal.after') !!}
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.shipping.before') !!}
 
                                 @if ($order->haveStockableItems())
                                     @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
@@ -687,6 +741,10 @@
                                     @endif
                                 @endif
 
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.shipping.after') !!}
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.tax-amount.before') !!}
+
                                 <!-- Tax Informations -->
                                 <div class="flex w-full justify-between gap-x-5">
                                     <p class="text-zinc-500">
@@ -697,6 +755,10 @@
                                         {{ core()->formatPrice($order->tax_amount, $order->order_currency_code) }}
                                     </p>
                                 </div>
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.tax-amount.after') !!}
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.discount.before') !!}
 
                                 @if ($order->base_discount_amount > 0)
                                     <div class="flex w-full justify-between gap-x-5">
@@ -714,6 +776,10 @@
                                     </div>
                                 @endif
 
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.discount.after') !!}
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.grand-total.before') !!}
+
                                 <!-- Grand Total -->
                                 <div class="flex w-full justify-between gap-x-5 font-semibold">
                                     <p class="text-zinc-500">
@@ -724,6 +790,10 @@
                                         {{ core()->formatPrice($order->grand_total, $order->order_currency_code) }}
                                     </p>
                                 </div>
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.grand-total.after') !!}
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-paid.before') !!}
 
                                 <!-- Total Paid -->
                                 <div class="flex w-full justify-between gap-x-5">
@@ -736,7 +806,11 @@
                                     </p>
                                 </div>
 
-                                <!-- Refund Details -->
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-paid.after') !!}
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-refunded.before') !!}
+
+                                <!-- Total Refunded -->
                                 <div class="flex w-full justify-between gap-x-5">
                                     <p class="text-zinc-500">
                                         @lang('shop::app.customers.account.orders.view.information.total-refunded')
@@ -746,6 +820,10 @@
                                         {{ core()->formatPrice($order->grand_total_refunded, $order->order_currency_code) }}
                                     </p>
                                 </div>
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-refunded.after') !!}
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-due.before') !!}
 
                                 <!-- Total Due -->
                                 <div class="flex w-full justify-between gap-x-5">
@@ -761,6 +839,9 @@
                                         @endif
                                     </p>
                                 </div>
+
+                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-due.after') !!}
+
                             </div>
                         </div>
                     </div>
@@ -806,6 +887,14 @@
                                                 <p class="pb-2 text-sm font-medium">
                                                     {{ $item->name }}
                                                 </p>
+
+                                                @if (isset($item->additional['attributes']))
+                                                    <div>
+                                                        @foreach ($item->additional['attributes'] as $attribute)
+                                                            <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
 
                                                 <div class="grid gap-1.5 text-xs font-medium">
                                                     <!-- SKU -->
@@ -896,6 +985,9 @@
                                     </div>
 
                                     <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.subtotal.before') !!}
+
                                         @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
                                             <div class="flex w-full justify-between gap-x-5">
                                                 <p class="text-zinc-500">
@@ -927,6 +1019,10 @@
                                                 </p>
                                             </div>
                                         @endif
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.subtotal.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.shipping.before') !!}
 
                                         @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                                             <div class="flex w-full justify-between gap-x-5">
@@ -970,6 +1066,10 @@
                                             </div>
                                         @endif
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.shipping.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.discount.before') !!}
+
                                         @if ($invoice->base_discount_amount > 0)
                                             <div class="flex w-full justify-between gap-x-5">
                                                 <p class="text-zinc-500">
@@ -982,6 +1082,11 @@
                                             </div>
                                         @endif
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.discount.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.tax.before') !!}
+
+                                        <!-- Tax Amount -->
                                         <div class="flex w-full justify-between gap-x-5">
                                             <p class="text-zinc-500">
                                                 @lang('shop::app.customers.account.orders.view.invoices.tax')
@@ -992,6 +1097,11 @@
                                             </p>
                                         </div>
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.tax.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.grand-total.before') !!}
+
+                                        <!-- Grand Total -->
                                         <div class="flex w-full justify-between gap-x-5 font-semibold">
                                             <p class="text-zinc-500">
                                                 @lang('shop::app.customers.account.orders.view.invoices.grand-total')
@@ -1001,6 +1111,9 @@
                                                 {{ core()->formatPrice($invoice->grand_total, $order->order_currency_code) }}
                                             </p>
                                         </div>
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.grand-total.after') !!}
+
                                     </div>
                                 </div>
                             </div>
@@ -1056,6 +1169,14 @@
     
                                                     <td data-value="@lang('shop::app.customers.account.orders.view.invoices.product-name')">
                                                         {{ $item->name }}
+
+                                                        @if (isset($item->additional['attributes']))
+                                                            <div>
+                                                                @foreach ($item->additional['attributes'] as $attribute)
+                                                                    <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
                                                     </td>
     
                                                     <td
@@ -1109,9 +1230,14 @@
                                     </table>
                                 </div>
     
+                                <!-- Summary -->
                                 <div class="mt-8 flex items-start gap-10 max-lg:gap-5">
                                     <div class="flex flex-auto justify-end">
                                         <div class="grid max-w-max gap-2 text-sm">
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.subtotal.before') !!}
+
+                                            <!-- Sub Total -->
                                             @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
                                                 <div class="flex w-full justify-between gap-x-5">
                                                     @lang('shop::app.customers.account.orders.view.invoices.subtotal')
@@ -1145,7 +1271,12 @@
                                                     </p>
                                                 </div>
                                             @endif
-    
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.subtotal.after') !!}
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.shipping.before') !!}
+
+                                            <!-- Shipping -->
                                             @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                                                 <div class="flex w-full justify-between gap-x-5">
                                                     @lang('shop::app.customers.account.orders.view.invoices.shipping-handling')
@@ -1179,7 +1310,12 @@
                                                     </p>
                                                 </div>
                                             @endif
-    
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.shipping.after') !!}
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.discount.before') !!}
+
+                                            <!-- Discount Amount -->
                                             @if ($invoice->base_discount_amount > 0)
                                                 <div class="flex w-full justify-between gap-x-5">
                                                     @lang('shop::app.customers.account.orders.view.invoices.discount')
@@ -1189,7 +1325,12 @@
                                                     </p>
                                                 </div>
                                             @endif
-    
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.discount.after') !!}
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.tax-amount.before') !!}
+
+                                            <!-- Tax Amount -->
                                             <div class="flex w-full justify-between gap-x-5">
                                                 @lang('shop::app.customers.account.orders.view.invoices.tax')
     
@@ -1197,7 +1338,12 @@
                                                     {{ core()->formatPrice($invoice->tax_amount, $order->order_currency_code) }}
                                                 </p>
                                             </div>
-    
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.tax-amount.after') !!}
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.grand-total.before') !!}
+
+                                            <!-- Grand Total -->
                                             <div class="flex w-full justify-between gap-x-5 font-semibold">
                                                 @lang('shop::app.customers.account.orders.view.invoices.grand-total')
     
@@ -1205,6 +1351,9 @@
                                                     {{ core()->formatPrice($invoice->grand_total, $order->order_currency_code) }}
                                                 </p>
                                             </div>
+
+                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.grand-total.after') !!}
+
                                         </div>
                                     </div>
                                 </div>
@@ -1266,6 +1415,14 @@
     
                                                     <td data-value="@lang('shop::app.customers.account.orders.view.shipments.product-name')">
                                                         {{ $item->name }}
+
+                                                        @if (isset($item->additional['attributes']))
+                                                            <div>
+                                                                @foreach ($item->additional['attributes'] as $attribute)
+                                                                    <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
                                                     </td>
     
                                                     <td data-value="@lang('shop::app.customers.account.orders.view.shipments.qty')">
@@ -1389,6 +1546,14 @@
 
                                                     <td data-value="@lang('shop::app.customers.account.orders.view.refunds.product-name')">
                                                         {{ $item->name }}
+
+                                                        @if (isset($item->additional['attributes']))
+                                                            <div>
+                                                                @foreach ($item->additional['attributes'] as $attribute)
+                                                                    <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
                                                     </td>
 
                                                     <td
@@ -1561,6 +1726,9 @@
                                     </div>
 
                                     <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.subtotal.before') !!}
+
                                         @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
                                             <div class="flex w-full justify-between gap-x-5">
                                                 <p class="text-zinc-500">
@@ -1603,7 +1771,11 @@
                                                 </p>
                                             </div>
                                         @endif
-        
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.subtotal.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.shipping.before') !!}
+
                                         @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                                             <div class="flex w-full justify-between gap-x-5">
                                                 <p class="text-zinc-500">
@@ -1646,6 +1818,10 @@
                                             </div>
                                         @endif
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.shipping.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.discount.before') !!}
+
                                         <!-- Discount -->
                                         @if ($refund->discount_amount > 0)
                                             <div class="flex w-full justify-between gap-x-5">
@@ -1657,7 +1833,11 @@
                                             </div>
                                         @endif
 
-                                        <!-- Refund Tax -->
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.discount.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.tax-amount.before') !!}
+
+                                        <!-- Tax Amount -->
                                         @if ($refund->tax_amount > 0)
                                             <div class="flex w-full justify-between gap-x-5">
                                                 <p class="text-zinc-500">
@@ -1670,6 +1850,10 @@
                                             </div>
                                         @endif
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.tax-amount.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-refund.before') !!}
+
                                         <!-- Adjustments Refund -->
                                         <div class="flex w-full justify-between gap-x-5">
                                             <p class="text-zinc-500">
@@ -1680,6 +1864,10 @@
                                                 {{ core()->formatPrice($refund->adjustment_refund, $order->order_currency_code) }}
                                             </p>
                                         </div>
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-refund.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-fee.before') !!}
 
                                         <!-- Adjustment fee -->
                                         <div class="flex w-full justify-between gap-x-5">
@@ -1692,6 +1880,10 @@
                                             </p>
                                         </div>
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-fee.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.grand-total.before') !!}
+
                                         <!-- Grand Total -->
                                         <div class="flex w-full justify-between gap-x-5 font-semibold">
                                             <p class="text-zinc-500">
@@ -1702,6 +1894,9 @@
                                                 {{ core()->formatPrice($refund->grand_total, $order->order_currency_code) }}
                                             </p>
                                         </div>
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.grand-total.after') !!}
+
                                     </div>
                                 </div>
                             </div>
@@ -1710,6 +1905,10 @@
                             <div class="mt-8 flex items-start gap-10 max-lg:gap-5 max-md:hidden">
                                 <div class="flex flex-auto justify-end">
                                     <div class="grid max-w-max gap-2 text-sm">
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.subtotal.before') !!}
+
+                                        <!-- Sub Total -->
                                         @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
                                             <div class="flex w-full justify-between gap-x-5 text-sm">
                                                 @lang('shop::app.customers.account.orders.view.refunds.subtotal')
@@ -1744,6 +1943,11 @@
                                             </div>
                                         @endif
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.subtotal.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.shipping.before') !!}
+
+                                        <!-- Shipping And Handling -->
                                         @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                                             <div class="flex w-full justify-between gap-x-5">
                                                 @lang('shop::app.customers.account.orders.view.refunds.shipping-handling')
@@ -1778,6 +1982,11 @@
                                             </div>
                                         @endif
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.shipping.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.discount.before') !!}
+
+                                        <!-- Discount -->
                                         @if ($refund->discount_amount > 0)
                                             <div class="flex w-full justify-between gap-x-5">
                                                 @lang('shop::app.customers.account.orders.view.refunds.discount')
@@ -1788,6 +1997,11 @@
                                             </div>
                                         @endif
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.discount.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.tax-amount.before') !!}
+
+                                        <!-- Tax Amount -->
                                         @if ($refund->tax_amount > 0)
                                             <div class="flex w-full justify-between gap-x-5">
                                                 @lang('shop::app.customers.account.orders.view.refunds.tax')
@@ -1798,6 +2012,11 @@
                                             </div>
                                         @endif
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.tax-amount.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-refund.before') !!}
+
+                                        <!-- Adjustments Refund -->
                                         <div class="flex w-full justify-between gap-x-5">
                                             @lang('shop::app.customers.account.orders.view.refunds.adjustment-refund')
 
@@ -1806,6 +2025,11 @@
                                             </p>
                                         </div>
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-refund.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-fee.before') !!}
+
+                                        <!-- Adjustment fee -->
                                         <div class="flex w-full justify-between gap-x-5">
                                             @lang('shop::app.customers.account.orders.view.refunds.adjustment-fee')
 
@@ -1814,6 +2038,11 @@
                                             </p>
                                         </div>
 
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-fee.after') !!}
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.grand-total.before') !!}
+
+                                        <!-- Grand Total -->
                                         <div class="flex w-full justify-between gap-x-5 font-semibold">
                                             @lang('shop::app.customers.account.orders.view.refunds.grand-total')
 
@@ -1821,6 +2050,9 @@
                                                 {{ core()->formatPrice($refund->grand_total, $order->order_currency_code) }}
                                             </p>
                                         </div>
+
+                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.grand-total.after') !!}
+
                                     </div>
                                 </div>
                             </div>
@@ -1854,7 +2086,7 @@
                         </div>
                     @endif
 
-                    <!-- Biiling Address -->
+                    <!-- Billing Address -->
                     @if ($order->billing_address)
                         <div class="text-sm font-medium text-zinc-500">
                             @lang('shop::app.customers.account.orders.view.billing-address')
@@ -1913,7 +2145,7 @@
 
             <!-- Desktop View -->
             <div class="mt-11 flex flex-wrap justify-between gap-x-11 gap-y-8 border-t border-zinc-200 pt-7 max-md:hidden">
-                <!-- Biiling Address -->
+                <!-- Billing Address -->
                 @if ($order->billing_address)
                     <div class="grid max-w-[200px] gap-4 max-868:w-full max-868:max-w-full max-md:max-w-full max-md:gap-2">
                         <p class="text-base text-zinc-500 max-md:text-lg max-md:text-black">

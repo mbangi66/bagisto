@@ -8,9 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Attribute\Contracts\AttributeOption as AttributeOptionContract;
 use Webkul\Attribute\Database\Factories\AttributeOptionFactory;
 use Webkul\Core\Eloquent\TranslatableModel;
-use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Local\LocalFilesystemAdapter;
-use Illuminate\Support\Facades\Log;
 
 class AttributeOption extends TranslatableModel implements AttributeOptionContract
 {
@@ -45,22 +42,22 @@ class AttributeOption extends TranslatableModel implements AttributeOptionContra
     }
 
     /**
-     * Get image url for the swatch value.
+     * Get image url for the swatch value url.
      */
     public function swatch_value_url()
     {
-        if ($this->swatch_value && $this->attribute->swatch_type == 'image') {
-            if ($this->isDriverLocal()) {
-                return Storage::url($this->swatch_value);
-            }
-            $cacheUrl = url('cache/small/' . $this->swatch_value);
-            return $cacheUrl;
+        if (
+            $this->swatch_value
+            && $this->attribute->swatch_type == 'image'
+        ) {
+            return url('cache/small/'.$this->swatch_value);
         }
+
         return null;
     }
 
     /**
-     * Get image url for the swatch value attribute.
+     * Get image url for the product image.
      */
     public function getSwatchValueUrlAttribute()
     {
@@ -68,7 +65,7 @@ class AttributeOption extends TranslatableModel implements AttributeOptionContra
     }
 
     /**
-     * Create a new factory instance for the model.
+     * Create a new factory instance for the model
      */
     protected static function newFactory(): Factory
     {

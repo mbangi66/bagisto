@@ -449,7 +449,7 @@ class Sale extends AbstractReporting
             ->leftJoin('orders', 'order_items.order_id', '=', 'orders.id')
             ->leftJoin('tax_categories', 'order_items.tax_category_id', '=', 'tax_categories.id')
             ->select('tax_categories.id as tax_category_id', 'tax_categories.name')
-            ->addSelect(DB::raw('SUM(lensorder_items.base_tax_amount_invoiced - lensorder_items.base_tax_amount_refunded) as total'))
+            ->addSelect(DB::raw('SUM(order_items.base_tax_amount_invoiced - order_items.base_tax_amount_refunded) as total'))
             ->whereIn('orders.channel_id', $this->channelIds)
             ->whereBetween('order_items.created_at', [$this->startDate, $this->endDate])
             ->whereNotNull('tax_category_id')

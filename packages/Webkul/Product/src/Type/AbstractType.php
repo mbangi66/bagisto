@@ -545,7 +545,18 @@ abstract class AbstractType
             )->get();
         }
 
-        return $group->custom_attributes()->whereNotIn('code', $this->skipAttributes)->get();
+        return $group->custom_attributes()
+            ->select(
+                'attributes.*',
+                'attribute_translations.name as admin_name',
+                'attribute_translations.locale',
+            )
+            ->whereNotIn('code', $this->skipAttributes)
+            ->leftJoin('attribute_translations', function ($join) {
+                $join->on('attributes.id', '=', 'attribute_translations.attribute_id')
+                    ->where('attribute_translations.locale', '=', app()->getLocale());
+            })
+            ->get();
     }
 
     /**
@@ -775,9 +786,9 @@ abstract class AbstractType
                 'total_incl_tax'      => $convertedPrice * $data['quantity'],
                 'base_total'          => $price * $data['quantity'],
                 'base_total_incl_tax' => $price * $data['quantity'],
-                'weight'              => $this->product->weight ?? 0,
-                'total_weight'        => ($this->product->weight ?? 0) * $data['quantity'],
-                'base_total_weight'   => ($this->product->weight ?? 0) * $data['quantity'],
+                'weight'              => (float) ($this->product->weight ?? 0),
+                'total_weight'        => (float) ($this->product->weight ?? 0) * $data['quantity'],
+                'base_total_weight'   => (float) ($this->product->weight ?? 0) * $data['quantity'],
                 'type'                => $this->product->type,
                 'additional'          => $this->getAdditionalOptions($data),
             ],

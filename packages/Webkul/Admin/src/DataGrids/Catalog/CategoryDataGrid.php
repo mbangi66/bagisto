@@ -30,7 +30,10 @@ class CategoryDataGrid extends DataGrid
                 'category_translations.locale',
             )
             ->addSelect(DB::raw('COUNT(DISTINCT '.DB::getTablePrefix().'product_categories.product_id) as count'))
-            ->leftJoin('category_translations', 'categories.id', '=', 'category_translations.category_id')
+            ->leftJoin('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
             ->leftJoin('product_categories', 'categories.id', '=', 'product_categories.category_id')
             ->groupBy('categories.id');
 
@@ -72,10 +75,20 @@ class CategoryDataGrid extends DataGrid
         ]);
 
         $this->addColumn([
-            'index'      => 'status',
-            'label'      => trans('admin::app.catalog.categories.index.datagrid.status'),
-            'type'       => 'boolean',
-            'filterable' => true,
+            'index'              => 'status',
+            'label'              => trans('admin::app.catalog.categories.index.datagrid.status'),
+            'type'               => 'boolean',
+            'filterable'         => true,
+            'filterable_options' => [
+                [
+                    'label' => trans('admin::app.catalog.categories.index.datagrid.active'),
+                    'value' => 1,
+                ],
+                [
+                    'label' => trans('admin::app.catalog.categories.index.datagrid.inactive'),
+                    'value' => 0,
+                ],
+            ],
             'sortable'   => true,
             'closure'    => function ($value) {
                 if ($value->status) {

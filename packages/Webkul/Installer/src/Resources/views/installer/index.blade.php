@@ -386,7 +386,7 @@
                     </x-installer::form>
                 </div>
 
-                <!-- Systme Requirements -->
+                <!-- System Requirements -->
                 <div
                     class="w-full max-w-[568px] rounded-lg border border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"   
                     v-if="currentStep == 'systemRequirements'"
@@ -778,7 +778,7 @@
                                     <x-installer::form.control-group.control
                                         type="text"
                                         name="app_url"
-                                        ::value="envData.app_url ?? 'https://lens.majesticdemo.com'"
+                                        ::value="envData.app_url ?? 'https://localhost'"
                                         rules="required"
                                         :label="trans('installer::app.installer.index.environment-configuration.default-url')"
                                         :placeholder="trans('installer::app.installer.index.environment-configuration.default-url-link')"
@@ -1117,7 +1117,7 @@
                                     <x-installer::form.control-group.control
                                         type="password"
                                         name="password"
-                                        rules="required"
+                                        rules="required|min:6"
                                         :value="old('password')"
                                         :label="trans('installer::app.installer.index.create-administrator.password')"
                                     />

@@ -57,7 +57,7 @@
 
     <!-- Breadcrumbs -->
     @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
-        <div class="flex justify-center max-lg:hidden">
+        <div class="flex justify-center px-7 max-lg:hidden">
             <x-shop::breadcrumbs
                 name="product"
                 :entity="$product"
@@ -212,8 +212,8 @@
                                             href="{{ Storage::url($product[$customAttributeValue['code']]) }}"
                                             download="{{ $customAttributeValue['label'] }}"
                                         >
-                                            <img 
-                                                class="h-5 min-h-5 w-5 min-w-5" 
+                                            <img
+                                                class="h-5 min-h-5 w-5 min-w-5"
                                                 src="{{ Storage::url($customAttributeValue['value']) }}"
                                                 alt="Product Image"
                                             />
@@ -302,7 +302,7 @@
                                 {!! view_render_event('bagisto.shop.products.name.before', ['product' => $product]) !!}
 
                                 <div class="flex justify-between gap-4">
-                                    <h1 class="text-3xl font-medium max-sm:text-xl">
+                                    <h1 class="break-all text-3xl font-medium max-sm:text-xl">
                                         {{ $product->name }}
                                     </h1>
 
@@ -412,6 +412,8 @@
                                             :title="trans('shop::app.products.view.add-to-cart')"
                                             :disabled="! $product->isSaleable(1)"
                                             ::loading="isStoring.addToCart"
+                                            ::disabled="isStoring.addToCart"
+                                            @click="is_buy_now=0;"
                                         />
 
                                         {!! view_render_event('bagisto.shop.products.view.add_to_cart.after', ['product' => $product]) !!}
@@ -431,6 +433,7 @@
                                             :disabled="! $product->isSaleable(1)"
                                             ::loading="isStoring.buyNow"
                                             @click="is_buy_now=1;"
+                                            ::disabled="isStoring.buyNow"
                                         />
                                     @endif
 
@@ -606,6 +609,25 @@
 
                             this.$emitter.emit('add-flash', { type: 'success', message: "@lang('shop::app.products.view.add-to-compare')" });
                         }
+                    },
+
+                    updateQty(quantity, id) {
+                        this.isLoading = true;
+
+                        let qty = {};
+
+                        qty[id] = quantity;
+
+                        this.$axios.put('{{ route('shop.api.checkout.cart.update') }}', { qty })
+                            .then(response => {
+                                if (response.data.message) {
+                                    this.cart = response.data.data;
+                                } else {
+                                    this.$emitter.emit('add-flash', { type: 'warning', message: response.data.data.message });
+                                }
+
+                                this.isLoading = false;
+                            }).catch(error => this.isLoading = false);
                     },
 
                     getCompareItemsStorageKey() {

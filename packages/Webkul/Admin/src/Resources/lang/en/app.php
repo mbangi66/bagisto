@@ -3,38 +3,41 @@
 return [
     'users' => [
         'sessions' => [
-            'email'                => 'Email Address',
-            'forget-password-link' => 'Forget Password ?',
-            'password'             => 'Password',
-            'submit-btn'           => 'Sign In',
-            'title'                => 'Sign In',
+            'email'                  => 'Email Address',
+            'forget-password-link'   => 'Forget Password ?',
+            'password'               => 'Password',
+            'powered-by-description' => 'Powered by :bagisto, an open-source project by :webkul.',
+            'submit-btn'             => 'Sign In',
+            'title'                  => 'Sign In',
         ],
 
         'forget-password' => [
             'create' => [
-                'email'           => 'Registered Email',
-                'email-not-exist' => 'Email Not Exists',
-                'page-title'      => 'Forget Password',
-                'reset-link-sent' => 'Reset Password link sent',
-                'sign-in-link'    => 'Back to Sign In ?',
-                'submit-btn'      => 'Reset',
-                'title'           => 'Recover Password',
+                'email'                  => 'Registered Email',
+                'email-not-exist'        => 'Email Not Exists',
+                'page-title'             => 'Forget Password',
+                'powered-by-description' => 'Powered by :bagisto, an open-source project by :webkul.',
+                'reset-link-sent'        => 'Reset Password link sent',
+                'sign-in-link'           => 'Back to Sign In ?',
+                'submit-btn'             => 'Reset',
+                'title'                  => 'Recover Password',
             ],
         ],
 
         'reset-password' => [
-            'back-link-title'  => 'Back to Sign In ?',
-            'confirm-password' => 'Confirm Password',
-            'email'            => 'Registered Email',
-            'password'         => 'Password',
-            'submit-btn'       => 'Reset Password',
-            'title'            => 'Reset Password',
+            'back-link-title'        => 'Back to Sign In ?',
+            'confirm-password'       => 'Confirm Password',
+            'email'                  => 'Registered Email',
+            'password'               => 'Password',
+            'powered-by-description' => 'Powered by :bagisto, an open-source project by :webkul.',
+            'submit-btn'             => 'Reset Password',
+            'title'                  => 'Reset Password',
         ],
     ],
 
     'notifications' => [
         'description-text'      => 'List all the Notifications',
-        'marked-success'        => 'Notification Marked Successfully',
+        'marked-success'        => 'All notifications have been marked as read',
         'no-record'             => 'No Record Found',
         'of'                    => 'of',
         'per-page'              => 'Per Page',
@@ -180,7 +183,7 @@ return [
                 'error'                   => 'Something went wrong',
                 'minimum-order-error'     => 'The minimum order amount is not met.',
                 'order-placed-success'    => 'Order placed successfully.',
-                'payment-not-supported'   => 'This payment method is not supported',
+                'payment-not-supported'   => 'This payment method is not supported.',
                 'save-btn'                => 'Create Order',
                 'specify-payment-method'  => 'Payment method is missing.',
                 'specify-shipping-method' => 'Shipping method is missing.',
@@ -751,8 +754,8 @@ return [
                     'copy-of'                => 'Copy Of :value',
                     'delete'                 => 'Delete',
                     'disable'                => 'Disable',
-                    'id-value'               => 'Id - :id',
-                    'id'                     => 'Id',
+                    'id-value'               => 'ID - :id',
+                    'id'                     => 'ID',
                     'image'                  => 'Image',
                     'mass-delete-success'    => 'Selected Products Deleted Successfully',
                     'mass-update-success'    => 'Selected Products Updated Successfully',
@@ -1061,6 +1064,7 @@ return [
                     'date-time'           => 'Date Time',
                     'delete'              => 'Delete',
                     'edit'                => 'Edit',
+                    'false'               => 'False',
                     'file'                => 'File',
                     'id'                  => 'ID',
                     'image'               => 'Image',
@@ -1073,6 +1077,7 @@ return [
                     'select'              => 'Select',
                     'text'                => 'Text',
                     'textarea'            => 'Textarea',
+                    'true'                => 'True',
                     'type'                => 'Type',
                     'unique'              => 'Unique',
                 ],
@@ -1300,11 +1305,11 @@ return [
             ],
 
             'category'             => 'Category',
-            'create-success'       => 'category created successfully.',
+            'create-success'       => 'Category created successfully.',
             'delete-category-root' => 'The Root category can not be deleted.',
             'delete-failed'        => 'Error encountered while deleting category',
             'delete-success'       => 'The category has been successfully deleted.',
-            'update-success'       => 'category updated successfully.',
+            'update-success'       => 'Category updated successfully.',
         ],
 
         'families' => [
@@ -1409,6 +1414,7 @@ return [
                     'gender'         => 'Gender',
                     'group'          => 'Group',
                     'id'             => 'Customer ID',
+                    'id-value'       => 'ID - :id',
                     'inactive'       => 'Inactive',
                     'method-error'   => 'Error! Wrong method detected, please check mass action configuration',
                     'name'           => 'Customer Name',
@@ -2525,6 +2531,7 @@ return [
                     'general'           => 'General',
                     'group-separator'   => 'Group Separator',
                     'name'              => 'Name',
+                    'separator-note'    => 'The :attribute field can only accept the comma (,) and dot (.) operators',
                     'save-btn'          => 'Save Currency',
                     'symbol'            => 'Symbol',
                     'title'             => 'Create New Currency',
@@ -2573,6 +2580,7 @@ return [
                     'allowed-errors'      => 'Allowed Errors',
                     'back-btn'            => 'Back',
                     'create-update'       => 'Create/Update',
+                    'current-file'        => 'Current Uploaded File',
                     'delete'              => 'Delete',
                     'download-sample'     => 'Download Sample',
                     'field-separator'     => 'Field Separator',
@@ -2800,10 +2808,11 @@ return [
                         'title' => 'Edit Tax Categories',
                     ],
 
-                    'create-success' => 'New Tax Category Created',
+                    'can-not-delete' => 'Tax Rates Assigned Categories cannot be deleted.',
+                    'create-success' => 'New Tax Category Created.',
                     'delete-failed'  => 'Tax Category Deleted Failed',
-                    'delete-success' => 'Tax Category Deleted Successfully',
-                    'update-success' => 'Tax Category Successfully Updated',
+                    'delete-success' => 'Tax Category Deleted Successfully.',
+                    'update-success' => 'Tax Category Successfully Updated.',
                 ],
             ],
 
@@ -3078,17 +3087,18 @@ return [
                 'title'      => 'Themes',
 
                 'datagrid' => [
-                    'active'       => 'Active',
-                    'channel_name' => 'Channel Name',
-                    'delete'       => 'Delete',
-                    'id'           => 'Id',
-                    'inactive'     => 'Inactive',
-                    'name'         => 'Name',
-                    'sort-order'   => 'Sort Order',
-                    'status'       => 'Status',
-                    'theme'        => 'Theme',
-                    'type'         => 'Type',
-                    'view'         => 'View',
+                    'active'        => 'Active',
+                    'channel_name'  => 'Channel Name',
+                    'change-status' => 'Change status',
+                    'delete'        => 'Delete',
+                    'id'            => 'Id',
+                    'inactive'      => 'Inactive',
+                    'name'          => 'Name',
+                    'sort-order'    => 'Sort Order',
+                    'status'        => 'Status',
+                    'theme'         => 'Theme',
+                    'type'          => 'Type',
+                    'view'          => 'View',
                 ],
             ],
 
@@ -3345,7 +3355,7 @@ return [
                 'title' => 'General',
 
                 'general' => [
-                    'info'  => 'Set units options.',
+                    'info'  => 'Set units options and enable or disable breadcrumbs.',
                     'title' => 'General',
 
                     'unit-options' => [
@@ -3363,7 +3373,7 @@ return [
                 ],
 
                 'content' => [
-                    'info'  => 'Set compare options, wishlist options, image search options, footer, toggle footer and custom scripts.',
+                    'info'  => 'Set header offer title and custom scripts.',
                     'title' => 'Content',
 
                     'header-offer' => [
@@ -3383,7 +3393,7 @@ return [
                 ],
 
                 'design' => [
-                    'info'  => 'Set logo and favicon icon.',
+                    'info'  => 'Set logo and favicon icon for admin panel.',
                     'title' => 'Design',
 
                     'admin-logo' => [
@@ -3395,7 +3405,7 @@ return [
                 ],
 
                 'magic-ai' => [
-                    'info'  => 'Set Magic AI options.',
+                    'info'  => 'Set Magic AI options and allow some options to automate the creation of content.',
                     'title' => 'Magic AI',
 
                     'settings' => [
@@ -3618,7 +3628,7 @@ return [
 
                 'inventory' => [
                     'title'      => 'Inventory',
-                    'title-info' => 'Configure inventory settings to allow back orders, set minimum and maximum cart quantities, and define the out-of-stock threshold.',
+                    'title-info' => 'Configure inventory settings to allow back orders and define the out-of-stock threshold.',
 
                     'product-stock-options' => [
                         'allow-back-orders'       => 'Allow Back Orders',
@@ -3657,7 +3667,7 @@ return [
 
                 'captcha' => [
                     'info'  => 'Set site key, secret key and status.',
-                    'title' => 'Captcha',
+                    'title' => 'Google Captcha',
 
                     'credentials' => [
                         'secret-key' => 'Secret Key',
@@ -3674,7 +3684,7 @@ return [
                 ],
 
                 'settings' => [
-                    'settings-info' => 'Set newsletter subscriptions, email verifications and social login.',
+                    'settings-info' => 'Set wishlist, login redirection, newsletter subscriptions, default group option , email verifications and social login.',
                     'title'         => 'Settings',
 
                     'login-as-customer' => [
@@ -3759,16 +3769,21 @@ return [
                 ],
 
                 'notifications' => [
-                    'cancel-order'                                     => 'Send a notification after canceling an order',
+                    'cancel-order'                                     => 'Send a notification to customer after canceling an order',
+                    'cancel-order-mail-to-admin'                       => 'Send a notification e-mail to admin after canceling an order',
                     'customer'                                         => 'Send the customer account credentials after registration',
                     'customer-registration-confirmation-mail-to-admin' => 'Send a confirmation e-mail to admin after customer registration',
                     'info'                                             => 'To configure, receive emails for account verification, order confirmations, updates on invoices, refunds, shipments, and order cancellations.',
                     'new-admin'                                        => 'Send a confirmation e-mail to the admin after placing a new order',
                     'new-inventory-source'                             => 'Send a notification e-mail to the inventory source after creating a shipment',
                     'new-invoice'                                      => 'Send a notification e-mail to the customer after creating a new invoice',
+                    'new-invoice-mail-to-admin'                        => 'Send a notification e-mail to the admin after creating a new invoice',
                     'new-order'                                        => 'Send a confirmation e-mail to the customer after placing a new order',
+                    'new-order-mail-to-admin'                          => 'Send a confirmation e-mail to the admin after placing a new order',
                     'new-refund'                                       => 'Send a notification e-mail to the customer after creating a refund',
+                    'new-refund-mail-to-admin'                         => 'Send a notification e-mail to the admin after creating a new refund',
                     'new-shipment'                                     => 'Send a notification e-mail to the customer after creating a shipment',
+                    'new-shipment-mail-to-admin'                       => 'Send a notification e-mail to the admin after creating a new shipment',
                     'registration'                                     => 'Send a confirmation e-mail after customer registration',
                     'title'                                            => 'Notifications',
                     'verification'                                     => 'Send a verification e-mail after customer registration',
@@ -4109,6 +4124,10 @@ return [
                 'transactions'             => 'Transactions',
                 'url-rewrites'             => 'URL Rewrites',
                 'users'                    => 'Users',
+            ],
+
+            'powered-by' => [
+                'description' => 'Powered by :bagisto, an open-source project by :webkul.',
             ],
         ],
 
