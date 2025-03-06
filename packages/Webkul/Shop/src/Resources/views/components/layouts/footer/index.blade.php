@@ -20,15 +20,18 @@
 
 <footer class="mt-9 bg-lightOrange max-sm:mt-10">
     <!-- Order Now Button at the very top -->
+    @if (Request::is('/'))
     <div class="w-full flex justify-left p-4">
-        <a 
-            href="{{ route('shop.home.index') }}"
+
+            <a 
+                href="{{ route('shop.home.index') }}"
                 class="inline-flex text-white items-center rounded-xl bg-black px-7 py-2.5 font-medium hover:bg-gray-800 max-md:px-5 max-md:text-xs max-sm:rounded-lg max-sm:px-4 max-sm:py-2"
             >
                 Order Now
-        </a>
+            </a>
 
     </div>
+    @endif
     <div class="flex justify-between gap-x-6 gap-y-8 p-[60px] max-1060:flex-col-reverse max-md:gap-5 max-md:p-8 max-sm:px-4 max-sm:py-5">
         <!-- For Desktop View -->
         <div class="flex flex-wrap items-start gap-24 max-1180:gap-6 max-1060:hidden">

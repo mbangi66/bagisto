@@ -120,19 +120,21 @@
         <!-- Admin profile -->
         <x-admin::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
             <x-slot:toggle>
-                @if ($admin->image)
+                @if ($admin && $admin->image)
                     <button class="flex h-9 w-9 cursor-pointer overflow-hidden rounded-full hover:opacity-80 focus:opacity-80">
-                        <img
-                            src="{{ $admin->image_url }}"
-                            class="h-full w-full"
-                        />
+                        <img src="{{ $admin->image_url }}" class="h-full w-full" />
                     </button>
-                @else
+                @elseif($admin)
                     <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-blue-400 text-sm font-semibold leading-6 text-white transition-all hover:bg-blue-500 focus:bg-blue-500">
                         {{ substr($admin->name, 0, 1) }}
                     </button>
+                @else
+                    <!-- Fallback when $admin is not available -->
+                    <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-gray-400 text-sm font-semibold leading-6 text-white transition-all">
+                        Guest
+                    </button>
                 @endif
-            </x-slot>
+            </x-slot:toggle>
 
             <!-- Admin Dropdown -->
             <x-slot:content class="!p-0">

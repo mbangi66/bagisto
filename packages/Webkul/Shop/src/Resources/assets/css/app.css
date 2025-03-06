@@ -428,7 +428,7 @@ img.lazy {
     }
 
     .primary-button {
-        @apply flex gap-x-1.5 items-center place-content-center font-medium rounded-xl text-white bg-navyBlue border border-navyBlue px-8 py-4 max-w-max cursor-pointer transition-all hover:opacity-[0.9];
+        @apply flex gap-x-1.5 items-center place-content-center font-medium rounded-xl text-white bg-black border border-navyBlue px-8 py-4 max-w-max cursor-pointer transition-all hover:opacity-[0.9];
     }
     
     .secondary-button {

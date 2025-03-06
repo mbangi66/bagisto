@@ -13,7 +13,7 @@
             </x-shop::form.control-group>
 
             <!-- Company Name -->
-            <x-shop::form.control-group>
+            <!-- <x-shop::form.control-group>
                 <x-shop::form.control-group.label>
                     @lang('shop::app.checkout.onepage.address.company-name')
                 </x-shop::form.control-group.label>
@@ -24,7 +24,7 @@
                     ::value="address.company_name"
                     :placeholder="trans('shop::app.checkout.onepage.address.company-name')"
                 />
-            </x-shop::form.control-group>
+            </x-shop::form.control-group> -->
 
             {!! view_render_event('bagisto.shop.checkout.onepage.address.form.company_name.after') !!}
 
@@ -232,7 +232,7 @@
                 {!! view_render_event('bagisto.shop.checkout.onepage.address.form.city.after') !!}
 
                 <!-- Postcode -->
-                <x-shop::form.control-group>
+                <!-- <x-shop::form.control-group>
                     <x-shop::form.control-group.label class="{{ core()->isPostCodeRequired() ? 'required' : '' }} !mt-0">
                         @lang('shop::app.checkout.onepage.address.postcode')
                     </x-shop::form.control-group.label>
@@ -247,7 +247,7 @@
                     />
 
                     <x-shop::form.control-group.error ::name="controlName + '.postcode'" />
-                </x-shop::form.control-group>
+                </x-shop::form.control-group> -->
 
                 {!! view_render_event('bagisto.shop.checkout.onepage.address.form.postcode.after') !!}
             </div>

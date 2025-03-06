@@ -570,6 +570,16 @@ return [
                 'configurable' => [
                     'select-options'       => 'Please select an option',
                     'select-above-options' => 'Please select above options',
+                    'with-power' => 'With Power',
+                    'without-power' => 'Without Power',
+                    'quantity' => 'Quantity',
+                    'lens-power-options' => 'Lens Power Options',
+                    'two-different-powers' => 'Two Different Powers',
+                    'default-power-message' => 'By default, the same power will be used for both lenses.',
+                    'select-lens-power' => 'Select Lens Power',
+                    'left-lens-power' => 'Left Lens Power',
+                    'right-lens-power' => 'Right Lens Power',
+                    'select-options' => '-- Select Option --',
                 ],
 
                 'bundle' => [

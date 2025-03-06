@@ -333,26 +333,23 @@ class Product extends AbstractReporting
         $tablePrefix = DB::getTablePrefix();
     
         // Manually build the full table names
-        $orderItemsFull = $tablePrefix . $orderItemsBase; // becomes "lensorder_items"
-        $ordersFull     = $tablePrefix . $ordersBase;     // becomes "lensorders"
+        $orderItemsFull = $tablePrefix . $orderItemsBase; // e.g. "lensorder_items"
+        $ordersFull     = $tablePrefix . $ordersBase;     // e.g. "lensorders"
     
-        // Wrap the table names in raw expressions to avoid re-prefixing
-        $orderItemsExpression = DB::raw("`{$orderItemsFull}` as oi");
-        $ordersExpression     = DB::raw("`{$ordersFull}` as orders");
-    
+        // Build the query using raw expressions for the aliasing and column references
         $results = $this->orderItemRepository
             ->resetModel()
-            ->from($orderItemsExpression)
-            ->leftJoin($ordersExpression, 'oi.order_id', '=', 'orders.id')
+            ->from(DB::raw("`{$orderItemsFull}` as oi"))
+            ->leftJoin(DB::raw("`{$ordersFull}` as orders"), 'oi.order_id', '=', 'orders.id')
             ->select(
-                DB::raw("DAYOFYEAR(oi.created_at) AS date"),
+                DB::raw("DAYOFYEAR(orders.created_at) AS date"),
                 DB::raw('COUNT(*) AS total')
             )
-            ->whereIn('orders.channel_id', $this->channelIds)
-            ->whereBetween('oi.created_at', [$startDate, $endDate])
+            ->whereIn(DB::raw("orders.channel_id"), $this->channelIds)
+            ->whereBetween(DB::raw("orders.created_at"), [$startDate, $endDate])
             ->groupBy('date')
             ->get();
-            
+    
         $stats = [];
     
         foreach ($config['intervals'] as $interval) {
@@ -367,8 +364,6 @@ class Product extends AbstractReporting
         return $stats;
     }
     
-     
-
     /**
      * Returns products added to wishlist over time
      *

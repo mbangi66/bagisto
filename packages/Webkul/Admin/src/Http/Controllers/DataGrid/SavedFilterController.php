@@ -11,7 +11,9 @@ class SavedFilterController extends Controller
     /**
      * Create a new controller instance.
      */
-    public function __construct(protected SavedFilterRepository $savedFilterRepository) {}
+    public function __construct(protected SavedFilterRepository $savedFilterRepository) {
+        $this->middleware('auth:admin');
+    }
 
     /**
      * Save filters to the database.

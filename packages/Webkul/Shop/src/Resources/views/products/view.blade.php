@@ -487,6 +487,11 @@
 
                             buyNow: false,
                         },
+                        powerOption: 'with',
+                        differentPowers: false,
+                        selectedProduct: '',
+                        leftProduct: '',
+                        rightProduct: '',
                     }
                 },
 
@@ -497,6 +502,20 @@
                         this.isStoring[operation] = true;
 
                         let formData = new FormData(this.$refs.formData);
+
+                        if (!this.differentPowers) {
+                            // Single power mode: assign the same product for both eyes
+                            if (this.selectedProduct) {
+                                // Remove the grouped_product field if present
+                                formData.delete('grouped_product');
+                                // Set left_power and right_power to the selected product
+                                formData.set('left_power', this.selectedProduct);
+                                formData.set('right_power', this.selectedProduct);
+                                // Ensure the qty for the selected product is 2
+                                formData.delete(`qty[${this.selectedProduct}]`);
+                                formData.append(`qty[${this.selectedProduct}]`, 2);
+                            }
+                        }
 
                         this.ensureQuantity(formData);
 

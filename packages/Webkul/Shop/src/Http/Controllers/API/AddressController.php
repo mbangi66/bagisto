@@ -45,7 +45,7 @@ class AddressController extends APIController
             'country',
             'state',
             'city',
-            'postcode',
+            // 'postcode',
             'phone',
             'default_address',
             'email',

@@ -96,14 +96,18 @@
         </div>
 
         <!-- Order Now Button at the very top -->
+        @if (Request::is('/'))
         <div class="w-full flex justify-left p-4">
-            <a 
-                href="{{ route('shop.home.index') }}"
+
+                <a 
+                    href="{{ route('shop.home.index') }}"
                     class="inline-flex text-white items-center rounded-xl bg-black px-7 py-2.5 font-medium hover:bg-gray-800 max-md:px-5 max-md:text-xs max-sm:rounded-lg max-sm:px-4 max-sm:py-2"
                 >
                     Order Now
-            </a>
+                </a>
+
         </div>
+        @endif
 
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.search_bar.after') !!}
 
@@ -263,8 +267,8 @@
 @pushOnce('scripts')
 <script type="text/x-template" id="v-desktop-category-template">
   <div class="relative group"
-       @mouseenter="cancelHideDropdown"
-       @mouseleave="startHideDropdown">
+       @mouseleave="startHideDropdown"
+       @mouseenter="cancelHideDropdown">
     
     <!-- Top Navigation: Parent Categories -->
     <div class="flex items-center gap-5">
@@ -272,47 +276,66 @@
            :key="parent.id"
            class="group relative"
            @mouseenter="setActiveParent(parent)">
-        
         <a :href="parent.url" class="px-5 uppercase text-black font-semibold">
           @{{ parent.name }}
         </a>
       </div>
     </div>
 
-    <!-- Styled Dropdown with Limited Width -->
+    <!-- Dropdown Container -->
     <div v-if="dropdownVisible && activeParent && activeParent.children && activeParent.children.length"
-         class="fixed left-0 top-full h-full w-full bg-white shadow-lg z-50 flex border border-gray-200 rounded-lg overflow-hidden"
-         @mouseenter="cancelHideDropdown" 
-         @mouseleave="startHideDropdown">
+         class="fixed left-0 top-full h-full w-full bg-white shadow-lg z-50 border border-gray-200 rounded-lg overflow-hidden">
       
-        <div class="flex w-full justify-between bg-white p-3">
-            <!-- Left: Category Links -->
-            <div class="w-2/3 p-5 bg-gray-50">
-                <ul>
-                <li v-for="child in activeParent.children"
-                    :key="child.id"
-                    class="py-2 px-3 hover:bg-gray-100 cursor-pointer"
-                    @mouseenter="setActiveChild(child)">
-                    
-                    <a :href="child.url" class="text-gray-700 font-small">
-                    @{{ child.name }}
-                    </a>
+      <div class="flex w-full justify-between bg-white p-3">
+        <!-- Left: Category Links -->
+        <div class="w-2/3 p-5 bg-gray-50">
+          <ul class="p-5 bg-gray-50">
+            <li v-for="child in activeParent.children"
+                :key="child.id"
+                class="py-2 border-b last:border-b-0">
+              <div class="flex items-center justify-between">
+                <a :href="child.url"
+                  class="text-gray-700 font-small"
+                  @mouseenter="setActiveChild(child)">
+                  @{{ child.name }}
+                </a>
+                <!-- Arrow Icon only for children that have their own children -->
+                <button v-if="child.children && child.children.length"
+                        @click.stop="toggleGrandchildren(child)"
+                        class="focus:outline-none">
+                  <svg 
+                    :style="expandedChildId === child.id ? 'transform: rotate(180deg); transition: transform 0.2s ease;' : 'transform: rotate(0deg); transition: transform 0.2s ease;'" 
+                    class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+              </div>
+              <!-- Grandchildren list placed below the child item -->
+              <ul v-if="expandedChildId === child.id" class="pl-4 mt-2">
+                <li v-for="grandchild in child.children"
+                    :key="grandchild.id"
+                    class="py-1">
+                  <a :href="grandchild.url" class="text-gray-600">
+                    @{{ grandchild.name }}
+                  </a>
                 </li>
-                </ul>
-            </div>
-
-            <!-- Right: Image Box -->
-            <div class="flex bg-white p-3">
-                <template v-if="activeChild && activeChild.banner_url">
-                    <img :src="activeChild.banner_url"
-                        :alt="activeChild.name"
-                        class="w-[400px] h-[200px] object-cover rounded-lg shadow-md ">
-                </template>
-                <template v-else>
-                    <div class="text-gray-500 text-sm">No Image</div>
-                </template>
-            </div>
+              </ul>
+            </li>
+          </ul>
         </div>
+
+        <!-- Right: Image Box -->
+        <div class="flex bg-white p-3">
+          <template v-if="activeChild && activeChild.banner_url">
+            <img :src="activeChild.banner_url"
+                 :alt="activeChild.name"
+                 class="w-[400px] h-[300px] object-cover rounded-lg shadow-md">
+          </template>
+          <template v-else>
+            <div class="text-gray-500 text-sm">No Image</div>
+          </template>
+        </div>
+      </div>
     </div>
   </div>
 </script>
@@ -328,6 +351,7 @@
         activeChild: null,
         dropdownVisible: false,
         hideTimeout: null,
+        expandedChildId: null, // tracks which child has its grandchildren visible
       }
     },
 
@@ -350,6 +374,8 @@
         this.activeParent = parent;
         this.activeChild = parent.children.length ? parent.children[0] : null;
         this.dropdownVisible = true;
+        // Reset expanded child when switching parent
+        this.expandedChildId = null;
         this.cancelHideDropdown();
       },
 
@@ -358,9 +384,19 @@
         this.cancelHideDropdown();
       },
 
+      toggleGrandchildren(child) {
+        // Toggle display of grandchildren menu for the clicked child
+        if (this.expandedChildId === child.id) {
+          this.expandedChildId = null;
+        } else {
+          this.expandedChildId = child.id;
+        }
+      },
+
       startHideDropdown() {
         this.hideTimeout = setTimeout(() => {
           this.dropdownVisible = false;
+          this.expandedChildId = null;
         }, 200);
       },
 

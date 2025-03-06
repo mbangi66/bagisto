@@ -18,44 +18,44 @@
 
                 <!-- Loop through all child attributes -->
                 <div class="mt-5" v-for="(attribute, index) in childAttributes" :key="index">
-  <!-- For attributes that are not visible, render a hidden input so their value is submitted -->
-  <template v-if="!shouldShowAttribute(attribute)">
-    <input
-      type="hidden"
-      :name="'super_attribute[' + attribute.id + ']'"
-      :value="attribute.selectedValue"
-    >
-  </template>
+                <!-- For attributes that are not visible, render a hidden input so their value is submitted -->
+                <template v-if="!shouldShowAttribute(attribute)">
+                    <input
+                    type="hidden"
+                    :name="'super_attribute[' + attribute.id + ']'"
+                    :value="attribute.selectedValue"
+                    >
+                </template>
 
-  <!-- For visible attributes, render the full field -->
-  <div v-show="shouldShowAttribute(attribute)">
-    <!-- Dropdown Options Container for dropdown or text swatch -->
-    <template v-if="!attribute.swatch_type || attribute.swatch_type === '' || attribute.swatch_type === 'dropdown'">
-      <h2 class="mb-4 text-xl max-sm:mb-1.5 max-sm:text-base max-sm:font-medium">
-        @{{ attribute.label }}
-      </h2>
-      <v-field
-        as="select"
-        :name="'super_attribute[' + attribute.id + ']'"
-        class="custom-select mb-3 block w-full cursor-pointer rounded-lg border border-zinc-200 bg-white px-5 py-3 text-base text-zinc-500 focus:border-blue-500 focus:ring-blue-500"
-        :class="[errors['super_attribute[' + attribute.id + ']'] ? 'border border-red-500' : '']"
-        :id="'attribute_' + attribute.id"
-        v-model="attribute.selectedValue"
-        :rules="(attribute.code === 'sphere_power' && isWithPower) ? 'required' : ''"
-        :label="attribute.label"
-        :aria-label="attribute.label"
-        :disabled="attribute.disabled"
-        @change="configure(attribute, $event.target.value)"
-      >
-        <option
-          v-for="(option, index) in attribute.options"
-          :value="option.id"
-          :key="option.id"
-        >
-          @{{ option.label }}
-        </option>
-      </v-field>
-    </template>
+                <!-- For visible attributes, render the full field -->
+                <div v-show="shouldShowAttribute(attribute)">
+                    <!-- Dropdown Options Container for dropdown or text swatch -->
+                    <template v-if="!attribute.swatch_type || attribute.swatch_type === '' || attribute.swatch_type === 'dropdown'">
+                    <h2 class="mb-4 text-xl max-sm:mb-1.5 max-sm:text-base max-sm:font-medium">
+                        @{{ attribute.label }}
+                    </h2>
+                    <v-field
+                        as="select"
+                        :name="'super_attribute[' + attribute.id + ']'"
+                        class="custom-select mb-3 block w-full cursor-pointer rounded-lg border border-zinc-200 bg-white px-5 py-3 text-base text-zinc-500 focus:border-blue-500 focus:ring-blue-500"
+                        :class="[errors['super_attribute[' + attribute.id + ']'] ? 'border border-red-500' : '']"
+                        :id="'attribute_' + attribute.id"
+                        v-model="attribute.selectedValue"
+                        :rules="(attribute.code === 'sphere_power' && isWithPower) ? 'required' : ''"
+                        :label="attribute.label"
+                        :aria-label="attribute.label"
+                        :disabled="attribute.disabled"
+                        @change="configure(attribute, $event.target.value)"
+                    >
+                        <option
+                        v-for="(option, index) in attribute.options"
+                        :value="option.id"
+                        :key="option.id"
+                        >
+                        @{{ option.label }}
+                        </option>
+                    </v-field>
+                    </template>
 
                         <!-- Swatch Options Container -->
                         <template v-else>

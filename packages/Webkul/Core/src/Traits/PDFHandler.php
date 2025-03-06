@@ -23,10 +23,14 @@ trait PDFHandler
 
         if (($direction = core()->getCurrentLocale()->direction) == 'rtl') {
             $mPDF = new Mpdf([
+                'mode'             => 'utf-8',
                 'margin_left'   => 0,
                 'margin_right'  => 0,
                 'margin_top'    => 0,
                 'margin_bottom' => 0,
+                'autoLangToFont'   => true,     
+                'autoScriptToLang' => true,     
+                'default_font'     => 'DejaVu Sans',
             ]);
             $mPDF->SetDirectionality($direction);
             $mPDF->SetDisplayMode('fullpage');
@@ -40,7 +44,9 @@ trait PDFHandler
 
         return PDF::loadHTML($this->adjustArabicAndPersianContent($html))
             ->setPaper('A4', 'portrait')
-            ->set_option('defaultFont', 'Courier')
+            ->set_option('defaultFont', 'DejaVu Sans')
+            ->set_option('isHtml5ParserEnabled', true)
+            ->set_option('isRemoteEnabled', true)
             ->download($fileName.'.pdf');
     }
 

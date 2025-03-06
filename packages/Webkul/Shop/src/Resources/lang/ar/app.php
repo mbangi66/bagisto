@@ -571,6 +571,16 @@ return [
                 'configurable' => [
                     'select-options'       => 'يرجى اختيار خيار',
                     'select-above-options' => 'يرجى اختيار الخيارات أعلاه',
+                    'with-power' => 'قياس نظر',
+                    'without-power' => 'بدون قياس',
+                    'quantity' => 'الكمية',
+                    'lens-power-options' => 'خيارات قوة العدسات',
+                    'two-different-powers' => 'قوتان مختلفتان',
+                    'default-power-message' => 'بشكل افتراضي، سيتم استخدام نفس القوة لكلتا العدستين.',
+                    'select-lens-power' => 'اختر قوة العدسة',
+                    'left-lens-power' => 'قوة العدسة اليسرى',
+                    'right-lens-power' => 'قوة العدسة اليمنى',
+                    'select-options' => '-- اختر خياراً --',
                 ],
 
                 'bundle' => [

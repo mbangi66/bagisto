@@ -44,12 +44,12 @@
 
         <style>
     .Cart-Button {
-    background-color: #626232 !important;
+    background-color:rgb(0, 0, 0) !important;
     color: white !important;
     transition: background-color 0.3s ease;
 }
 .Cart-Button:hover {
-    background-color: #575730 !important;
+    background-color:rgb(29, 29, 29) !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
     </style>
