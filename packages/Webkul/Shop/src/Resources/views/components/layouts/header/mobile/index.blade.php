@@ -18,7 +18,7 @@
                             <img
                                 src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
                                 alt="{{ config('app.name') }}"
-                                width="131"
+                                width="110"
                                 height="29"
                             >
                         </a>
@@ -79,7 +79,7 @@
                     <!-- Currency Changer -->
                     <x-shop::drawer position="bottom" width="100%">
                         <x-slot:toggle>
-                            <div class="flex items-center gap-x-2.5 text-lg font-medium uppercase cursor-pointer">
+                            <div class="flex items-center gap-x-2.5 text-lg font-small uppercase cursor-pointer">
                                 {{ core()->getCurrentCurrency()->symbol . ' ' . core()->getCurrentCurrencyCode() }}
                             </div>
                         </x-slot>
@@ -91,7 +91,7 @@
                             </div>
                         </x-slot>
                         <x-slot:content class="!px-0">
-                            <div class="overflow-auto" style="max-height: calc(100vh - 100px)">
+                            <div class="overflow-auto" style="max-height: calc(100vh - 100px); padding-bottom: 5rem;">
                                 <v-currency-switcher></v-currency-switcher>
                             </div>
                         </x-slot>
@@ -100,7 +100,7 @@
                     <!-- Language Changer -->
                     <x-shop::drawer position="bottom" width="100%">
                         <x-slot:toggle>
-                            <div class="flex items-center gap-x-2.5 text-lg font-medium uppercase cursor-pointer">
+                            <div class="flex items-center gap-x-2.5 text-lg font-small uppercase cursor-pointer">
                                 <img
                                     src="{{ ! empty(core()->getCurrentLocale()->logo_url)
                                             ? core()->getCurrentLocale()->logo_url
@@ -122,7 +122,7 @@
                             </div>
                         </x-slot>
                         <x-slot:content class="!px-0">
-                            <div class="overflow-auto" style="max-height: calc(100vh - 100px)">
+                            <div class="overflow-auto" style="max-height: calc(100vh - 100px); padding-bottom: 5rem;">
                                 <v-locale-switcher></v-locale-switcher>
                             </div>
                         </x-slot>
@@ -130,6 +130,17 @@
                 </div>
             @endif
         </div>
+
+        <a
+            href="{{ route('shop.home.lending') }}"
+            aria-label="@lang('shop::app.components.layouts.header.bagisto')"
+        >
+            <img style="height: 70px"
+                src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
+                
+                alt="{{ config('app.name') }}"
+            >
+        </a>
 
         <!-- Right Navigation -->
         <div>
@@ -267,16 +278,17 @@
             </div>
         </div>
     </div>
-
+    @if (Request::is('/'))
     {!! view_render_event('bagisto.shop.components.layouts.header.mobile.search.before') !!}
     <div class="w-full flex items-center p-4 gap-4">
         <!-- Order Now Button -->
-        <a 
-            href="{{ route('shop.home.index') }}"
-            class="inline-flex text-white items-center rounded-xl bg-black px-7 py-2.5 font-medium hover:bg-gray-800 max-md:px-5 max-md:text-xs max-sm:rounded-lg max-sm:px-4 max-sm:py-2"
-        >
-            Order Now
-        </a>
+            <a 
+                href="{{ route('shop.home.index') }}"
+                class="inline-flex text-white items-center rounded-xl bg-black px-7 py-2.5 font-medium hover:bg-gray-800 max-md:px-5 max-md:text-xs max-sm:rounded-lg max-sm:px-4 max-sm:py-2"
+            >
+                Order Now
+            </a>
+        
 
         <!-- Search Catalog Form -->
         <form action="{{ route('shop.search.index') }}" class="flex items-center flex-1">
@@ -298,9 +310,10 @@
                 @endif
             </div>
         </form>
+        
     </div>
     {!! view_render_event('bagisto.shop.components.layouts.header.mobile.search.after') !!}
-
+    @endif
 </div>
 
 @pushOnce('scripts')

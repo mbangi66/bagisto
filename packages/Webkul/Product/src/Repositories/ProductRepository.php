@@ -104,6 +104,21 @@ class ProductRepository extends Repository
     }
 
     /**
+     * Check if a power copy already exists for the given base product.
+     *
+     * @param  int   $baseProductId
+     * @param  mixed $power
+     * @return \Webkul\Product\Contracts\Product|null
+     */
+    public function findExistingPowerCopy($baseProductId, $power)
+    {
+        $model = app($this->model());
+        return $model->where('parent_id', $baseProductId)
+                     ->where('sphere_power', $power)
+                     ->first();
+    }    
+
+    /**
      * Copy product.
      */
     public function setSearchEngine(string $searchEngine): self

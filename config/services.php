@@ -86,4 +86,10 @@ return [
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect'      => env('GITHUB_CALLBACK_URL'),
     ],
+
+    'new_delivery' => [
+        'url_token' => env('NEW_DELIVERY_URL_TOKEN', 'https://gpsmajestic.com:9017/api/Majestic/Token'),
+        'url_user'  => env('NEW_DELIVERY_URL_USER', 'https://gpsmajestic.com:9017/api/Majestic/GetUserInfo'),
+        'url_order' => env('NEW_DELIVERY_URL_ORDER', 'https://gpsmajestic.com:9017/api/Majestic/SaveJobOrder'),
+    ],
 ];

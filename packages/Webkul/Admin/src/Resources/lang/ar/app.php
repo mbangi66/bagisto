@@ -6,7 +6,7 @@ return [
             'email'                  => 'عنوان البريد الإلكتروني',
             'forget-password-link'   => 'نسيت كلمة المرور؟',
             'password'               => 'كلمة المرور',
-            'powered-by-description' => 'مدعوم من :bagisto، مشروع مفتوح المصدر من :webkul.',
+            'powered-by-description' => 'مدعوم من :Majestic for Information Technology',
             'submit-btn'             => 'تسجيل الدخول',
             'title'                  => 'تسجيل الدخول',
         ],
@@ -16,7 +16,7 @@ return [
                 'email'                  => 'البريد الإلكتروني المسجل',
                 'email-not-exist'        => 'البريد الإلكتروني غير موجود',
                 'page-title'             => 'نسيت كلمة المرور',
-                'powered-by-description' => 'مدعوم من :bagisto، مشروع مفتوح المصدر من :webkul.',
+                'powered-by-description' => 'مدعوم من :Majestic for Information Technology',
                 'reset-link-sent'        => 'تم إرسال رابط إعادة تعيين كلمة المرور',
                 'sign-in-link'           => 'العودة إلى تسجيل الدخول؟',
                 'submit-btn'             => 'إعادة تعيين',
@@ -29,7 +29,7 @@ return [
             'confirm-password'       => 'تأكيد كلمة المرور',
             'email'                  => 'البريد الإلكتروني المسجل',
             'password'               => 'كلمة المرور',
-            'powered-by-description' => 'مدعوم من :bagisto، مشروع مفتوح المصدر من :webkul.',
+            'powered-by-description' => 'مدعوم من :Majestic for Information Technology',
             'submit-btn'             => 'إعادة تعيين كلمة المرور',
             'title'                  => 'إعادة تعيين كلمة المرور',
         ],
@@ -771,6 +771,16 @@ return [
                     'type'                   => 'النوع',
                     'update-status'          => 'تحديث الحالة',
                 ],
+            ],
+            'copy-powers' => [
+                'title' => 'نسخ قوى المنتج',
+                'select-base-product' => 'اختر المنتج الأساسي',
+                'select-product-placeholder' => 'اختر منتجًا...',
+                'available-powers' => 'القوى المتاحة',
+                'copy-powers-btn' => 'نسخ القوى المحددة',
+                'success-message' => 'تم نسخ قوى المنتج بنجاح!',
+                'error-message' => 'فشل في نسخ قوى المنتج. حاول مرة أخرى.',
+                'no-product-selected' => 'لم يتم تحديد أي منتج.',
             ],
 
             'edit' => [
@@ -4126,7 +4136,7 @@ return [
             ],
 
             'powered-by' => [
-                'description' => 'مدعوم من :bagisto، مشروع مفتوح المصدر من :webkul.',
+                'description' => 'مدعوم من :Majestic for Information Technology',
             ],
         ],
 

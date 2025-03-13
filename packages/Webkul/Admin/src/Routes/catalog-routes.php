@@ -107,6 +107,9 @@ Route::group(['middleware' => ['admin'], 'prefix' => config('app.admin_url')], f
 
             Route::post('mass-update', 'massUpdate')->name('admin.catalog.products.mass_update');
 
+            Route::post('copy-powers', 'copyWithPowers')->name('admin.catalog.products.copy-powers');
+            Route::get('copy-powers/form', 'showCopyPowersForm')->name('admin.catalog.products.copy-powers.form');
+
             Route::post('mass-delete', 'massDestroy')->name('admin.catalog.products.mass_delete');
 
             Route::controller(ConfigurableController::class)->group(function () {

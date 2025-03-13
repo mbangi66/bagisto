@@ -57,7 +57,7 @@ class Category extends TranslatableModel implements CategoryContract
      *
      * @var array
      */
-    protected $appends = ['logo_url', 'banner_url', 'url'];
+    protected $appends = ['logo_url', 'banner_url', 'url','products_count'];
 
     /**
      * The products that belong to the category.
@@ -150,5 +150,12 @@ class Category extends TranslatableModel implements CategoryContract
     protected static function newFactory(): Factory
     {
         return CategoryFactory::new();
+    }
+
+    public function getProductsCountAttribute()
+    {
+        // This returns the count of related products.
+        // Note: This will run a query for each category instance.
+        return $this->products()->count();
     }
 }

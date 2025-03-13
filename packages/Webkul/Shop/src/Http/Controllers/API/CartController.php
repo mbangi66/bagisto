@@ -158,7 +158,7 @@ class CartController extends APIController
         $this->validate(request(), [
             'country'         => 'required',
             'state'           => 'required',
-            'postcode'        => 'required',
+            'postcode'        => 'nullable',
             'shipping_method' => 'sometimes|required',
         ]);
 

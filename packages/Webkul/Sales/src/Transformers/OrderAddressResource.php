@@ -23,6 +23,7 @@ class OrderAddressResource extends JsonResource
             'address'      => $this->address,
             'city'         => $this->city,
             'state'        => $this->state,
+            'block_id'     => $this->block_id,
             'country'      => $this->country,
             'postcode'     => $this->postcode,
             'email'        => $this->email,

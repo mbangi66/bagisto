@@ -7,10 +7,7 @@
 </v-carousel>
 
 @pushOnce('scripts')
-    <script
-        type="text/x-template"
-        id="v-carousel-template"
-    >
+    <script type="text/x-template" id="v-carousel-template">
         <div class="relative m-auto flex w-full overflow-hidden">
             <!-- Slider -->
             <div 
@@ -24,10 +21,10 @@
                     ref="slide"
                 >
                     <x-shop::media.images.lazy
-                        class="aspect-[2.743/1] max-h-full w-full max-w-full select-none transition-transform duration-300 ease-in-out"
+                        class="aspect-[3/1] max-h-full w-full max-w-full silders select-none transition-transform duration-300 ease-in-out"
                         ::lazy="false"
                         ::src="image.image"
-                        ::srcset="image.image + ' 1920w, ' + image.image.replace('storage', 'cache/large') + ' 1280w,' + image.image.replace('storage', 'cache/medium') + ' 1024w, ' + image.image.replace('storage', 'cache/small') + ' 525w'"
+                        ::srcset="image.image" 
                         ::alt="image?.title"
                         tabindex="0"
                     />
@@ -46,8 +43,7 @@
                 tabindex="0"
                 v-if="images?.length >= 2"
                 @click="navigate('prev')"
-            >
-            </span>
+            ></span>
 
             <span
                 class="icon-arrow-right absolute right-2.5 top-1/2 -mt-[22px] hidden w-auto rounded-full bg-black/80 p-3 text-2xl font-bold text-white opacity-30 transition-all md:inline-block"
@@ -60,8 +56,7 @@
                 tabindex="0"
                 v-if="images?.length >= 2"
                 @click="navigate('next')"
-            >
-            </span>
+            ></span>
 
             <!-- Pagination -->
             <div class="absolute bottom-5 left-0 flex w-full justify-center max-md:bottom-3.5 max-sm:bottom-2.5">
@@ -72,8 +67,7 @@
                     role="button"
                     tabindex="0"
                     @click="navigateByPagination(index)"
-                >
-                </div>
+                ></div>
             </div>
         </div>
     </script>
@@ -104,14 +98,13 @@
                 this.slider = this.$refs.sliderContainer;
 
                 if (
-                    this.$refs.slide
-                    && typeof this.$refs.slide[Symbol.iterator] === 'function'
+                    this.$refs.slide &&
+                    typeof this.$refs.slide[Symbol.iterator] === 'function'
                 ) {
                     this.slides = Array.from(this.$refs.slide);
                 }
 
                 this.init();
-
                 this.play();
             },
 
@@ -123,21 +116,15 @@
                         this.startFrom = -1;
                     }
 
-                    this.slides.forEach((slide, index) => {
+                    this.slides.forEach((slide) => {
                         slide.querySelector('img')?.addEventListener('dragstart', (e) => e.preventDefault());
 
                         slide.addEventListener('mousedown', this.handleDragStart);
-
                         slide.addEventListener('touchstart', this.handleDragStart);
-
                         slide.addEventListener('mouseup', this.handleDragEnd);
-
                         slide.addEventListener('mouseleave', this.handleDragEnd);
-
                         slide.addEventListener('touchend', this.handleDragEnd);
-
                         slide.addEventListener('mousemove', this.handleDrag);
-
                         slide.addEventListener('touchmove', this.handleDrag, { passive: true });
                     });
 
@@ -146,71 +133,46 @@
 
                 handleDragStart(event) {
                     this.startPos = event.type === 'mousedown' ? event.clientX : event.touches[0].clientX;
-
                     this.isDragging = true;
-
                     this.animationID = requestAnimationFrame(this.animation);
                 },
 
                 handleDrag(event) {
-                    if (! this.isDragging) {
+                    if (!this.isDragging) {
                         return;
                     }
-
                     const currentPosition = event.type === 'mousemove' ? event.clientX : event.touches[0].clientX;
-
                     this.currentTranslate = this.prevTranslate + currentPosition - this.startPos;
                 },
 
-                handleDragEnd(event) {
+                handleDragEnd() {
                     clearInterval(this.autoPlayInterval);
-
                     cancelAnimationFrame(this.animationID);
-
                     this.isDragging = false;
-
                     const movedBy = this.currentTranslate - this.prevTranslate;
-
                     if (this.direction == 'ltr') {
-                        if (
-                            movedBy < -100
-                            && this.currentIndex < this.slides.length - 1
-                        ) {
+                        if (movedBy < -100 && this.currentIndex < this.slides.length - 1) {
                             this.currentIndex += 1;
                         }
-
-                        if (
-                            movedBy > 100
-                            && this.currentIndex > 0
-                        ) {
+                        if (movedBy > 100 && this.currentIndex > 0) {
                             this.currentIndex -= 1;
                         }
                     } else {
-                        if (
-                            movedBy > 100
-                            && this.currentIndex < this.slides.length - 1
-                        ) {
+                        if (movedBy > 100 && this.currentIndex < this.slides.length - 1) {
                             if (Math.abs(this.currentIndex) != this.slides.length - 1) {
                                 this.currentIndex -= 1;
                             }
                         }
-
-                        if (
-                            movedBy < -100
-                            && this.currentIndex < 0
-                        ) {
+                        if (movedBy < -100 && this.currentIndex < 0) {
                             this.currentIndex += 1;
                         }
                     }
-
                     this.setPositionByIndex();
-
                     this.play();
                 },
 
                 animation() {
                     this.setSliderPosition();
-
                     if (this.isDragging) {
                         requestAnimationFrame(this.animation);
                     }
@@ -218,16 +180,12 @@
 
                 setPositionByIndex() {
                     this.currentTranslate = this.currentIndex * -window.innerWidth;
-
                     this.prevTranslate = this.currentTranslate;
-
                     this.setSliderPosition();
                 },
 
                 setSliderPosition() {
-                    if (this.slider) {
-                        this.slider.style.transform = `translateX(${this.currentTranslate}px)`;
-                    }
+                    this.slider.style.transform = `translateX(${this.currentTranslate}px)`;
                 },
 
                 visitLink(image) {
@@ -238,15 +196,12 @@
 
                 navigate(type) {
                     clearInterval(this.autoPlayInterval);
-
                     if (this.direction === 'rtl') {
                         type === 'next' ? this.prev() : this.next();
                     } else {
                         type === 'next' ? this.next() : this.prev();
                     }
-
                     this.setPositionByIndex();
-
                     this.play();
                 },
 
@@ -261,23 +216,17 @@
                 },
 
                 navigateByPagination(index) {
-                    this.direction == 'rtl' ? index = -index : '';
-
+                    if (this.direction == 'rtl') index = -index;
                     clearInterval(this.autoPlayInterval);
-
                     this.currentIndex = index;
-
                     this.setPositionByIndex();
-
                     this.play();
                 },
 
                 play() {
                     clearInterval(this.autoPlayInterval);
-
                     this.autoPlayInterval = setInterval(() => {
                         this.currentIndex = (this.currentIndex + this.startFrom) % this.images.length;
-
                         this.setPositionByIndex();
                     }, 5000);
                 },

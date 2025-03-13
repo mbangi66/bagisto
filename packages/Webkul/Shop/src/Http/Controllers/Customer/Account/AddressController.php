@@ -56,9 +56,10 @@ class AddressController extends Controller
             'country',
             'state',
             'city',
-            'postcode',
+            //'postcode',
             'phone',
             'email',
+            'block_id',
             'default_address',
         ]), [
             'customer_id' => $customer->id,
@@ -119,8 +120,9 @@ class AddressController extends Controller
             'country',
             'state',
             'city',
-            'postcode',
+           // 'postcode',
             'phone',
+            'block_id',
             'email',
         ]), [
             'customer_id' => $customer->id,

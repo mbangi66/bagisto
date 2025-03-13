@@ -55,7 +55,7 @@ class ConfigurationForm extends FormRequest
         return array_map(function ($rule) {
             return match ($rule) {
                 'phone'    => new PhoneNumber,
-                'postcode' => new PostCode,
+                //'postcode' => new PostCode,
                 'decimal'  => new Decimal,
                 default    => $rule,
             };

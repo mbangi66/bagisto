@@ -3,8 +3,10 @@
 namespace Webkul\Core\ImageCache;
 
 use Config;
+use Closure;
 use Illuminate\Http\Response as IlluminateResponse;
 use Intervention\Image\ImageCacheController;
+use Intervention\Image\ImageManager;
 
 class Controller extends ImageCacheController
 {
@@ -32,6 +34,9 @@ class Controller extends ImageCacheController
      */
     public function getResponse($template, $filename)
     {
+        dd('ImageCache Controller Reached');
+
+        \Log::info("ImageCache: Received request. Template: {$template}, Filename: {$filename}");
         switch (strtolower($template)) {
             case 'original':
                 return $this->getOriginal($filename);
@@ -54,43 +59,47 @@ class Controller extends ImageCacheController
     public function getImage($template, $filename)
     {
         $this->template = $template;
-
-        $cacheTime = $template == 'logo' ? 10080 : config('imagecache.lifetime');
+        $cacheTime = ($template == 'logo') ? 10080 : config('imagecache.lifetime');
+        \Log::info("ImageCache: getImage called. Cache time: {$cacheTime} minutes.");
 
         if ($template == 'logo') {
             $path = self::BAGISTO_LOGO;
+            \Log::info("ImageCache: Using logo image: {$path}");
         } else {
             $template = $this->getTemplate($template);
-
             $path = $this->getImagePath($filename);
+            \Log::info("ImageCache: Computed image path: {$path}");
         }
 
-        /**
-         * Image manipulation based on callback
-         */
         $manager = new ImageManager(Config::get('image'));
 
         try {
             $content = $manager->cache(function ($image) use ($template, $path) {
+                \Log::info("ImageCache: Starting processing for path: {$path}");
+                // Check if file exists
+                if (!file_exists($path)) {
+                    \Log::error("ImageCache: File not found at path: {$path}");
+                    throw new \Exception("File does not exist: {$path}");
+                }
                 if ($template instanceof Closure) {
-                    /**
-                     * Build from closure callback template
-                     */
+                    \Log::info("ImageCache: Using closure callback for image processing.");
                     $template($image->make($path));
                 } elseif (is_object($template)) {
-                    /**
-                     * Build from filter template
-                     */
+                    \Log::info("ImageCache: Using filter template for image processing.");
                     $image->make($path)->filter($template);
                 } else {
+                    \Log::info("ImageCache: No template provided. Simply making image.");
                     $image->make($path);
                 }
+                \Log::info("ImageCache: Finished processing for path: {$path}");
             }, $cacheTime);
+
+            \Log::info("ImageCache: Successfully generated cached image content.");
         } catch (\Exception $e) {
+            \Log::error("ImageCache: Error processing image: " . $e->getMessage());
             if ($template != 'logo') {
                 abort(404);
             }
-
             $content = '';
         }
 
@@ -105,30 +114,18 @@ class Controller extends ImageCacheController
      */
     protected function buildResponse($content)
     {
-        /**
-         * Define mime type
-         */
         $mime = finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content);
-
-        /**
-         * Respond with 304 not modified if browser has the image cached
-         */
         $eTag = md5($content);
-
         $notModified = isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH'] == $eTag;
-
         $content = $notModified ? null : $content;
-
         $statusCode = $notModified ? 304 : 200;
-
         $maxAge = ($this->template == 'logo' ? 10080 : config('imagecache.lifetime')) * 60;
 
-        /**
-         * Return http response
-         */
+        \Log::info("ImageCache: Building response with MIME: {$mime}, Status: {$statusCode}, Max-Age: {$maxAge}");
+
         return new IlluminateResponse($content, $statusCode, [
             'Content-Type'   => $mime,
-            'Cache-Control'  => 'max-age='.$maxAge.', public',
+            'Cache-Control'  => 'max-age=' . $maxAge . ', public',
             'Content-Length' => strlen($content),
             'Etag'           => $eTag,
         ]);

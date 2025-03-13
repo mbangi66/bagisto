@@ -78,6 +78,8 @@ class CoreServiceProvider extends ServiceProvider
                 'uses' => 'Webkul\Core\ImageCache\Controller@getResponse',
                 'as'   => 'imagecache',
             ])->where(['filename' => $filenamePattern]);
+        } else {
+            \Log::info('Image cache route is NOT a string!');
         }
     }
 

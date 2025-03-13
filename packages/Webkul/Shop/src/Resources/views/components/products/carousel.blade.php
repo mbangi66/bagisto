@@ -1,7 +1,7 @@
 <v-products-carousel
     src="{{ $src }}"
     title="{{ $title }}"
-    navigation-link="{{ 'https://lens.majesticdemo.com/color-contact-lenses' ?? $navigationLink  }}"
+    navigation-link="{{ $navigationLink ?? 'https://lens.majesticdemo.com/color-contact-lenses'   }}"
 >
     <x-shop::shimmer.products.carousel :navigation-link="$navigationLink ?? false" />
 </v-products-carousel>

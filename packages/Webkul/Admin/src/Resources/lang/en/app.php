@@ -6,7 +6,7 @@ return [
             'email'                  => 'Email Address',
             'forget-password-link'   => 'Forget Password ?',
             'password'               => 'Password',
-            'powered-by-description' => 'Powered by :bagisto, an open-source project by :webkul.',
+            'powered-by-description' => 'Powered by :Majestic for Information Technology',
             'submit-btn'             => 'Sign In',
             'title'                  => 'Sign In',
         ],
@@ -16,7 +16,7 @@ return [
                 'email'                  => 'Registered Email',
                 'email-not-exist'        => 'Email Not Exists',
                 'page-title'             => 'Forget Password',
-                'powered-by-description' => 'Powered by :bagisto, an open-source project by :webkul.',
+                'powered-by-description' => 'Powered by :Majestic for Information Technology',
                 'reset-link-sent'        => 'Reset Password link sent',
                 'sign-in-link'           => 'Back to Sign In ?',
                 'submit-btn'             => 'Reset',
@@ -29,7 +29,7 @@ return [
             'confirm-password'       => 'Confirm Password',
             'email'                  => 'Registered Email',
             'password'               => 'Password',
-            'powered-by-description' => 'Powered by :bagisto, an open-source project by :webkul.',
+            'powered-by-description' => 'Powered by :Majestic for Information Technology',
             'submit-btn'             => 'Reset Password',
             'title'                  => 'Reset Password',
         ],
@@ -773,6 +773,16 @@ return [
                 ],
             ],
 
+            'copy-powers' => [
+                'title' => 'Copy Product Powers',
+                'select-base-product' => 'Select Base Product',
+                'select-product-placeholder' => 'Choose a product...',
+                'available-powers' => 'Available Powers',
+                'copy-powers-btn' => 'Copy Selected Powers',
+                'success-message' => 'Product powers copied successfully!',
+                'error-message' => 'Failed to copy product powers. Please try again.',
+                'no-product-selected' => 'No product selected.',
+            ],
             'edit' => [
                 'preview'  => 'Preview',
                 'remove'   => 'Remove',
@@ -4127,7 +4137,7 @@ return [
             ],
 
             'powered-by' => [
-                'description' => 'Powered by :bagisto, an open-source project by :webkul.',
+                'description' => 'Powered by :Majestic for Information Technology',
             ],
         ],
 

@@ -67,4 +67,8 @@ class Kernel extends HttpKernel
         'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'cacheResponse' => \Webkul\Shop\Http\Middleware\CacheResponse::class,
     ];
+
+    protected $routeMiddleware = [ 
+        'AdminAuth' => \App\Http\Middleware\AdminAuth::class,
+    ];
 }

@@ -34,11 +34,12 @@ class AddressRequest extends FormRequest
             'country'         => ['required'],
             'state'           => ['required'],
             'city'            => ['required'],
-            'postcode'        => ['required', new PostCode],
+            'postcode'        => ['nullable', new PostCode],
             'phone'           => ['required', new PhoneNumber],
             'vat_id'          => [new VatIdRule],
             'email'           => ['required'],
             'default_address' => ['sometimes', 'required', 'in:0,1'],
+            'block_id'        => ['nullable'],
         ];
     }
 

@@ -22,13 +22,25 @@
                     :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`"
                     :aria-label="product.name + ' '"
                 >
+                    <!-- Desktop Image -->
                     <x-shop::media.images.lazy
-                        class="after:content-[' '] relative bg-zinc-100 transition-all duration-300 after:block after:pb-[calc(100%+9px)] group-hover:scale-105"
+                        class="after:content-[' '] relative bg-zinc-100 transition-all duration-300 after:block after:pb-[calc(100%+9px)] group-hover:scale-105 max-sm:hidden"
                         ::src="product.base_image.medium_image_url"
                         ::key="product.id"
                         ::index="product.id"
                         width="291"
                         height="300"
+                        ::alt="product.name"
+                    />
+                    
+                    <!-- Mobile Image -->
+                    <x-shop::media.images.lazy
+                        class="after:content-[' '] relative bg-zinc-100 transition-all duration-300 after:block after:pb-[calc(100%+9px)] group-hover:scale-105 hidden max-sm:block"
+                        ::src="product.base_image.small_image_url"
+                        ::key="'mobile-'+product.id"
+                        ::index="'mobile-'+product.id"
+                        width="190"
+                        height="200"
                         ::alt="product.name"
                     />
                 </a>

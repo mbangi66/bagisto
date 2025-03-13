@@ -436,6 +436,7 @@ class Cart
                 'city',
                 'postcode',
                 'phone',
+                'block_id',
             ])
             ->merge([
                 'address_type'      => CartAddress::ADDRESS_TYPE_BILLING,
@@ -486,6 +487,7 @@ class Cart
             'city',
             'postcode',
             'phone',
+            'block_id',
         ];
 
         if ($this->cart->billing_address->use_for_shipping) {

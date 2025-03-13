@@ -409,4 +409,192 @@ class Order extends Model implements OrderContract
     {
         return OrderFactory::new();
     }
+
+    public function sendToNewDeliverySystem($lang = 'ar')
+    {
+        info("sendToNewDeliverySystem started for order #{$this->id}.");
+    
+        // Check if the new delivery system is enabled via .env
+        if (!env('NEW_DELIVERY_ENABLED', false)) {
+            info("New Delivery System is disabled via .env.");
+            return false;
+        }
+    
+        // Retrieve settings from .env and config files.
+        $settings = [
+            'userName'  => env('NEW_DELIVERY_USERNAME'),
+            'password'  => env('NEW_DELIVERY_PASSWORD'),
+            'url_token' => config('services.new_delivery.url_token'),
+            'url_user'  => config('services.new_delivery.url_user'),
+            'url_order' => config('services.new_delivery.url_order'),
+        ];
+        info("New Delivery settings loaded.", $settings);
+    
+        // Validate required configuration
+        if (!$settings['userName'] || !$settings['password'] || !$settings['url_token'] ||
+            !$settings['url_user'] || !$settings['url_order']) {
+            info('New Delivery System configuration missing');
+            return false;
+        }
+    
+        // Skip orders already marked as processed.
+        if ($this->status == 'completed') {
+            info('Skipped order #' . $this->id . ' already processing.');
+            return false;
+        }
+    
+        // Retrieve shipping address record to build full address.
+        $addressRecord = \DB::table('addresses')
+            ->where('order_id', $this->id)
+            ->where('address_type', 'order_shipping')
+            ->first();
+    
+        if (!$addressRecord) {
+            info("Shipping address not found, checking billing address.");
+            $addressRecord = \DB::table('addresses')
+                ->where('order_id', $this->id)
+                ->where('address_type', 'order_billing')
+                ->first();
+        }
+    
+        // Get block name based on block_id and language.
+        $blockName = '';
+        if ($addressRecord && !empty($addressRecord->block_id)) {
+            $block = \DB::table('blocks')->where('id', $addressRecord->block_id)->first();
+            if ($block) {
+                $blockName = ($lang === 'ar') ? $block->name_ar : $block->name_en;
+            }
+        }
+    
+        // Build full delivery address: street, city, block name, state.
+        $deliveryAddress = $addressRecord
+            ? trim($addressRecord->address) . "\n" .
+              trim($addressRecord->city) . "\n" .
+              trim($blockName) . "\n" .
+              trim($addressRecord->state)
+            : '';
+    
+        // Append a random 4-digit number to the order number.
+        $orderNumber = $this->increment_id . '-' . rand(1000, 9999);
+    
+        // Map order data.
+        $customerFullName = trim($this->customer_first_name . ' ' . $this->customer_last_name);
+        info("Order mapping completed.", [
+            'customerFullName' => $customerFullName,
+            'orderNumber'      => $orderNumber,
+            'deliveryAddress'  => $deliveryAddress,
+        ]);
+    
+        // Retrieve phone number from the address record.
+        $phone = $addressRecord && !empty($addressRecord->phone)
+            ? $addressRecord->phone
+            : '0000000000';
+        info("Phone number determined.", ['phone' => $phone]);
+    
+        $paymentMethod = $this->payment_method ?? 'COD';
+    
+        // Retrieve block coordinates based on block_id.
+        $deliveryLat = 48.1249; // default
+        $deliveryLng = 29.125;  // default
+        if ($addressRecord && !empty($addressRecord->block_id)) {
+            $block = \DB::table('blocks')->where('id', $addressRecord->block_id)->first();
+            if ($block) {
+                $deliveryLat = $block->lat ?? $deliveryLat;
+                $deliveryLng = $block->lng ?? $deliveryLng;
+            }
+        }
+        info("Block coordinates determined.", ['lat' => $deliveryLat, 'lng' => $deliveryLng]);
+    
+        // Authenticate with the new delivery system to get a token.
+        info("Requesting token from new delivery system.");
+        $response = \Illuminate\Support\Facades\Http::withHeaders(['Content-Type' => 'application/json'])
+            ->send('POST', $settings['url_token'], [
+                'body' => json_encode([
+                    'userName' => $settings['userName'],
+                    'password' => $settings['password'],
+                ]),
+            ])->json();
+        info("Token response received.", $response);
+    
+        if (\Arr::get($response, 'message') !== 'Success') {
+            info("Token error: ", $response);
+            return 'Token error';
+        }
+    
+        // Retrieve user info using the token.
+        info("Requesting user information with obtained token.");
+        $responseUser = \Illuminate\Support\Facades\Http::withHeaders([
+                'Authorization' => 'Bearer ' . $response['token'],
+                'Content-Type'  => 'application/json'
+            ])
+            ->send('POST', $settings['url_user'], [
+                'body' => json_encode(['userName' => $settings['userName']]),
+            ])->json();
+        info("User info response received.", $responseUser);
+    
+        if (\Arr::get($responseUser, 'status.isSuccess') !== true) {
+            info("User info error: ", $responseUser);
+            return 'User error';
+        }
+    
+        // Prepare order items array as lstTalabatItem.
+        $lstTalabatItem = [];
+        foreach ($this->items as $item) {
+            $lstTalabatItem[] = [
+                'itemname'  => $item->name,
+                'unitprice' => (string) $item->price,
+                'quantity'  => $item->qty_ordered,
+                'comment'   => '', // Populate if any item notes exist.
+            ];
+        }
+        info("Order items prepared.", ['lstTalabatItem' => $lstTalabatItem]);
+    
+        // Prepare the payload for the delivery system matching the restaurant API structure.
+        $data = [
+            'companyId'           => (string) $responseUser['dataValue']['companyId'],
+            'userId'              => (string) $responseUser['dataValue']['userId'],
+            'orderNo'             => $orderNumber,
+            'orderDate'           => date(DATE_ATOM),
+            'orderAmount'         => (string) $this->grand_total,
+            'DeliveryCustomerName'=> $customerFullName,
+            'DeliveryCustomerMobile'=> $phone,
+            'DeliveryAddress'     => $deliveryAddress,
+            'DeliveryCity'        => $this->shipping_description ?? '',
+            'DeliveryPostalCode'  => $this->coupon_code ?? '',
+            'PaymentMethod'       => (string) $paymentMethod,
+            'deliveryLat'         => (string) $deliveryLat,
+            'deliveryLng'         => (string) $deliveryLng,
+            'lstTalabatItem'      => $lstTalabatItem,
+        ];
+        info("Payload for order submission prepared.", $data);
+    
+        // For testing, log the payload and send to API.
+        info("Final payload for new delivery system:", $data);
+    
+        info("Sending order data to the new delivery system.");
+        $responseOrder = \Illuminate\Support\Facades\Http::withHeaders([
+                'Authorization' => 'Bearer ' . $response['token'],
+                'Content-Type'  => 'application/json'
+            ])
+            ->send('POST', $settings['url_order'], [
+                'body' => json_encode($data),
+            ])->json();
+        info("Order response received.", $responseOrder);
+    
+        if (\Arr::get($responseOrder, 'status.isSuccess') !== true) {
+            if (\Arr::get($responseOrder, 'status.message') !== 'Already exists') {
+                info("Order submission error: ", $responseOrder);
+                return \Arr::get($responseOrder, 'status.message');
+            }
+        }
+    
+        // Mark the order as sent to the delivery system.
+        $this->sent_to_delivery = now();
+        $this->save();
+        info("Order #{$this->id} marked as sent to the delivery system.");
+    
+        return true;
+    }
+    
+    
 }

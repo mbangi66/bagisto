@@ -26,7 +26,7 @@
     {!! view_render_event('bagisto.shop.categories.view.banner_path.before') !!}
 
     <!-- Hero Image -->
-    @if ($category->banner_path)
+    <!-- @if ($category->banner_path)
         <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-4">
             <x-shop::media.images.lazy
                 class="aspect-[4/1] max-h-full max-w-full rounded-xl"
@@ -36,7 +36,7 @@
                 height="300"
             />
         </div>
-    @endif
+    @endif -->
 
     {!! view_render_event('bagisto.shop.categories.view.banner_path.after') !!}
 

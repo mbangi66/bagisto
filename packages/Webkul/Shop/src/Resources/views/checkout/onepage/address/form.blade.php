@@ -1,9 +1,7 @@
 @pushOnce('scripts')
-    <script
-        type="text/x-template"
-        id="v-checkout-address-form-template"
-    >
+    <script type="text/x-template" id="v-checkout-address-form-template">
         <div class="mt-2 max-md:mt-3">
+            <!-- Hidden Address ID -->
             <x-shop::form.control-group class="hidden">
                 <x-shop::form.control-group.control
                     type="text"
@@ -12,24 +10,9 @@
                 />
             </x-shop::form.control-group>
 
-            <!-- Company Name -->
-            <!-- <x-shop::form.control-group>
-                <x-shop::form.control-group.label>
-                    @lang('shop::app.checkout.onepage.address.company-name')
-                </x-shop::form.control-group.label>
-
-                <x-shop::form.control-group.control
-                    type="text"
-                    ::name="controlName + '.company_name'"
-                    ::value="address.company_name"
-                    :placeholder="trans('shop::app.checkout.onepage.address.company-name')"
-                />
-            </x-shop::form.control-group> -->
-
-            {!! view_render_event('bagisto.shop.checkout.onepage.address.form.company_name.after') !!}
-
-            <!-- First Name -->
+            <!-- First & Last Name -->
             <div class="grid grid-cols-2 gap-x-5 max-md:grid-cols-1">
+                <!-- First Name -->
                 <x-shop::form.control-group>
                     <x-shop::form.control-group.label class="required !mt-0">
                         @lang('shop::app.checkout.onepage.address.first-name')
@@ -47,7 +30,7 @@
                     <x-shop::form.control-group.error ::name="controlName + '.first_name'" />
                 </x-shop::form.control-group>
 
-                {!! view_render_event('bagisto.shop.checkout.onepage.address.form.first_name.after') !!}
+                {!! view_render_event('baguluk.shop.checkout.onepage.address.form.first_name.after') !!}
 
                 <!-- Last Name -->
                 <x-shop::form.control-group>
@@ -67,7 +50,7 @@
                     <x-shop::form.control-group.error ::name="controlName + '.last_name'" />
                 </x-shop::form.control-group>
 
-                {!! view_render_event('bagisto.shop.checkout.onepage.address.form.last_name.after') !!}
+                {!! view_render_event('baguluk.shop.checkout.onepage.address.form.last_name.after') !!}
             </div>
 
             <!-- Email -->
@@ -88,7 +71,7 @@
                 <x-shop::form.control-group.error ::name="controlName + '.email'" />
             </x-shop::form.control-group>
 
-            {!! view_render_event('bagisto.shop.checkout.onepage.address.form.email.after') !!}
+            {!! view_render_event('baguluk.shop.checkout.onepage.address.form.email.after') !!}
 
             <!-- Street Address -->
             <x-shop::form.control-group>
@@ -128,8 +111,9 @@
                 @endif
             </x-shop::form.control-group>
 
-            {!! view_render_event('bagisto.shop.checkout.onepage.address.form.address.after') !!}
+            {!! view_render_event('baguluk.shop.checkout.onepage.address.form.address.after') !!}
 
+            <!-- Country & State -->
             <div class="grid grid-cols-2 gap-x-5 max-md:grid-cols-1">
                 <!-- Country -->
                 <x-shop::form.control-group class="!mb-4">
@@ -140,28 +124,24 @@
                     <x-shop::form.control-group.control
                         type="select"
                         ::name="controlName + '.country'"
-                        ::value="address.country"
-                        v-model="selectedCountry"
+                        v-model="localAddress.country"
                         rules="{{ core()->isCountryRequired() ? 'required' : '' }}"
                         :label="trans('shop::app.checkout.onepage.address.country')"
-                        :placeholder="trans('shop::app.checkout.onepage.address.country')"
                     >
-                        <option value="">
-                            @lang('shop::app.checkout.onepage.address.select-country')
-                        </option>
-
                         <option
-                            v-for="country in countries"
-                            :value="country.code"
+                            v-for="gccCountry in gccCountries"
+                            :key="gccCountry.code"
+                            :disabled="gccCountry.disabled"
+                            :value="gccCountry.code"
                         >
-                            @{{ country.name }}
+                            @{{ gccCountry.name }}
                         </option>
                     </x-shop::form.control-group.control>
 
                     <x-shop::form.control-group.error ::name="controlName + '.country'" />
                 </x-shop::form.control-group>
 
-                {!! view_render_event('bagisto.shop.checkout.onepage.address.form.country.after') !!}
+                {!! view_render_event('baguluk.shop.checkout.onepage.address.form.country.after') !!}
 
                 <!-- State -->
                 <x-shop::form.control-group>
@@ -169,87 +149,101 @@
                         @lang('shop::app.checkout.onepage.address.state')
                     </x-shop::form.control-group.label>
 
-                    <template v-if="states">
-                        <template v-if="haveStates">
-                            <x-shop::form.control-group.control
-                                type="select"
-                                ::name="controlName + '.state'"
-                                rules="{{ core()->isStateRequired() ? 'required' : '' }}"
-                                ::value="address.state"
-                                :label="trans('shop::app.checkout.onepage.address.state')"
-                                :placeholder="trans('shop::app.checkout.onepage.address.state')"
+                    <!-- If states available -->
+                    <template v-if="states[selectedCountry] && states[selectedCountry].length">
+                        <x-shop::form.control-group.control
+                            type="select"
+                            ::name="controlName + '.state'"
+                            v-model="localAddress.state"
+                            rules="{{ core()->isStateRequired() ? 'required' : '' }}"
+                            :label="trans('shop::app.checkout.onepage.address.state')"
+                            :placeholder="trans('shop::app.checkout.onepage.address.state')"
+                        >
+                            <option value="">
+                                @lang('shop::app.checkout.onepage.address.select-state')
+                            </option>
+                            <option
+                                v-for="state in states[selectedCountry]"
+                                :key="state.code"
+                                :value="state.state_name"
                             >
-                                <option value="">
-                                    @lang('shop::app.checkout.onepage.address.select-state')
-                                </option>
+                                @{{ state.default_name }}
+                            </option>
+                        </x-shop::form.control-group.control>
+                    </template>
 
-                                <option
-                                    v-for='(state, index) in states[selectedCountry]'
-                                    :value="state.code"
-                                >
-                                    @{{ state.default_name }}
-                                </option>
-                            </x-shop::form.control-group.control>
-                        </template>
-
-                        <template v-else>
-                            <x-shop::form.control-group.control
-                                type="text"
-                                ::name="controlName + '.state'"
-                                ::value="address.state"
-                                rules="{{ core()->isStateRequired() ? 'required' : '' }}"
-                                :label="trans('shop::app.checkout.onepage.address.state')"
-                                :placeholder="trans('shop::app.checkout.onepage.address.state')"
-                            />
-                        </template>
+                    <!-- Otherwise, show disabled dropdown -->
+                    <template v-else>
+                        <x-shop::form.control-group.control
+                            type="select"
+                            disabled
+                            :label="trans('shop::app.checkout.onepage.address.state')"
+                        >
+                            <option>No states found.</option>
+                        </x-shop::form.control-group.control>
                     </template>
 
                     <x-shop::form.control-group.error ::name="controlName + '.state'" />
                 </x-shop::form.control-group>
-
-                {!! view_render_event('bagisto.shop.checkout.onepage.address.form.state.after') !!}
             </div>
 
+            <!-- City & Block -->
             <div class="grid grid-cols-2 gap-x-5 max-md:grid-cols-1">
                 <!-- City -->
                 <x-shop::form.control-group>
                     <x-shop::form.control-group.label class="required !mt-0">
                         @lang('shop::app.checkout.onepage.address.city')
                     </x-shop::form.control-group.label>
-
+                    
                     <x-shop::form.control-group.control
-                        type="text"
+                        type="select"
                         ::name="controlName + '.city'"
-                        ::value="address.city"
+                        v-model="localAddress.city"
                         rules="required"
-                        :label="trans('shop::app.checkout.onepage.address.city')"
-                        :placeholder="trans('shop::app.checkout.onepage.address.city')"
-                    />
+                        :label="'City'"
+                        :placeholder="'Select City'"
+                    >
+                        <option value="">Select City</option>
+                        <option 
+                            v-for="city in cities" 
+                            :key="city.id" 
+                            :value="city.city_name"
+                        >
+                            @{{ city.city_name }}
+                        </option>
+                    </x-shop::form.control-group.control>
 
                     <x-shop::form.control-group.error ::name="controlName + '.city'" />
                 </x-shop::form.control-group>
 
-                {!! view_render_event('bagisto.shop.checkout.onepage.address.form.city.after') !!}
+                {!! view_render_event('baguluk.shop.checkout.onepage.address.form.city.after') !!}
 
-                <!-- Postcode -->
-                <!-- <x-shop::form.control-group>
-                    <x-shop::form.control-group.label class="{{ core()->isPostCodeRequired() ? 'required' : '' }} !mt-0">
-                        @lang('shop::app.checkout.onepage.address.postcode')
+                <!-- Block -->
+                <x-shop::form.control-group>
+                    <x-shop::form.control-group.label class="required !mt-0">
+                        Block
                     </x-shop::form.control-group.label>
 
                     <x-shop::form.control-group.control
-                        type="text"
-                        ::name="controlName + '.postcode'"
-                        ::value="address.postcode"
-                        rules="{{ core()->isPostCodeRequired() ? 'required' : '' }}|postcode"
-                        :label="trans('shop::app.checkout.onepage.address.postcode')"
-                        :placeholder="trans('shop::app.checkout.onepage.address.postcode')"
-                    />
+                        type="select"
+                        ::name="controlName + '.block_id'"
+                        v-model="localAddress.block_id"
+                        rules="required"
+                        :label="'Block'"
+                        :placeholder="'Select Block'"
+                    >
+                        <option value="">Select Block</option>
+                        <option 
+                            v-for="block in blocks" 
+                            :key="block.id" 
+                            :value="block.id"
+                        >
+                            @{{ block.name_en }}
+                        </option>
+                    </x-shop::form.control-group.control>
 
-                    <x-shop::form.control-group.error ::name="controlName + '.postcode'" />
-                </x-shop::form.control-group> -->
-
-                {!! view_render_event('bagisto.shop.checkout.onepage.address.form.postcode.after') !!}
+                    <x-shop::form.control-group.error ::name="controlName + '.block_id'" />
+                </x-shop::form.control-group>
             </div>
 
             <!-- Phone Number -->
@@ -270,7 +264,7 @@
                 <x-shop::form.control-group.error ::name="controlName + '.phone'" />
             </x-shop::form.control-group>
 
-            {!! view_render_event('bagisto.shop.checkout.onepage.address.form.phone.after') !!}
+            {!! view_render_event('baguluk.shop.checkout.onepage.address.form.phone.after') !!}
         </div>
     </script>
 
@@ -283,10 +277,8 @@
                     type: String,
                     required: true,
                 },
-
                 address: {
                     type: Object,
-
                     default: () => ({
                         id: 0,
                         company_name: '',
@@ -298,6 +290,7 @@
                         state: '',
                         city: '',
                         postcode: '',
+                        block_id: '',
                         phone: '',
                     }),
                 },
@@ -305,43 +298,165 @@
 
             data() {
                 return {
-                    selectedCountry: this.address.country,
-
-                    countries: [],
-
-                    states: null,
-                }
+                    localAddress: {
+                        ...this.address,
+                        country: this.address.country || 'KW'
+                    },
+                    // The GCC countries. We'll disable all but Kuwait:
+                    gccCountries: [
+                        { id: 121, code: 'BH', name: 'Bahrain', disabled: true },
+                        { id: 122, code: 'KW', name: 'Kuwait',  disabled: false },
+                        { id: 123, code: 'OM', name: 'Oman',    disabled: true },
+                        { id: 124, code: 'QA', name: 'Qatar',   disabled: true },
+                        { id: 125, code: 'SA', name: 'Saudi Arabia', disabled: true },
+                        { id: 126, code: 'AE', name: 'United Arab Emirates', disabled: true },
+                    ],
+                    states: {},
+                    cities: [],
+                    blocks: [],
+                };
             },
 
             computed: {
-                haveStates() {
-                    return !! this.states[this.selectedCountry]?.length;
+                selectedCountry() {
+                    console.log('Computed selectedCountry:', this.localAddress.country);
+                    return this.localAddress.country;
+                },
+            },
+
+            watch: {
+                localAddress: {
+                    deep: true,
+                    handler(newVal) {
+                        this.$emit('update:address', newVal);
+                    }
+                },
+                'localAddress.country'(newCountry) {
+                    console.log('Watcher: localAddress.country changed to:', newCountry);
+                    if (newCountry) {
+                        this.localAddress.state = '';
+                        this.cities = [];
+                        this.localAddress.city = '';
+                        this.blocks = [];
+                        this.localAddress.block_id = '';
+                        this.loadStates(newCountry);
+                    }
+                },
+                'localAddress.state'(newState) {
+                    console.log('Watcher: localAddress.state changed to:', newState);
+                    if (newState) {
+                        this.localAddress.city = '';
+                        this.blocks = [];
+                        this.localAddress.block_id = '';
+                        this.loadCities(newState);
+                    }
+                },
+                'localAddress.city'(newCity) {
+                    console.log('Watcher: localAddress.city changed to:', newCity);
+                    if (newCity) {
+                        this.localAddress.block_id = '';
+                        this.loadBlocks(newCity);
+                    }
                 },
             },
 
             mounted() {
-                this.getCountries();
-
-                this.getStates();
+                console.log('Component mounted. Address:', this.address);
+                this.initStates();
+                if (this.address.state) {
+                    console.log('Mounted: Loading cities for state:', this.address.state);
+                    this.loadCities(this.address.state);
+                }
+                if (this.address.city) {
+                    console.log('Mounted: Loading blocks for city:', this.address.city);
+                    this.loadBlocks(this.address.city);
+                }
             },
 
             methods: {
-                getCountries() {
-                    this.$axios.get("{{ route('shop.api.core.countries') }}")
-                        .then(response => {
-                            this.countries = response.data.data;
-                        })
-                        .catch(() => {});
+                getCountryId(countryCode) {
+                    console.log('getCountryId called with:', countryCode);
+                    const country = this.gccCountries.find(c => c.code === countryCode);
+                    const id = country ? country.id : null;
+                    console.log('getCountryId returning:', id);
+                    return id;
                 },
 
-                getStates() {
-                    this.$axios.get("{{ route('shop.api.core.states') }}")
-                        .then(response => {
-                            this.states = response.data.data;
-                        })
-                        .catch(() => {});
+                initStates() {
+                    console.log('initStates called for country:', this.localAddress.country);
+                    const countryId = this.getCountryId(this.localAddress.country);
+                    if (countryId) {
+                        this.$axios.get('/locations/states/' + countryId)
+                            .then(response => {
+                                console.log('States response:', response.data);
+                                const transformed = response.data.map(item => ({
+                                    code: item.id,
+                                    default_name: item.state_name,
+                                    state_name: item.state_name
+                                }));
+                                console.log('Transformed states:', transformed);
+                                this.states[this.localAddress.country] = transformed;
+                                console.log('this.states after initStates:', this.states);
+                            })
+                            .catch(error => {
+                                console.error('Error in initStates:', error);
+                            });
+                    } else {
+                        console.log('No countryId found for country:', this.localAddress.country);
+                    }
                 },
-            }
+
+                loadStates(countryCode) {
+                    console.log('loadStates called for country:', countryCode);
+                    const countryId = this.getCountryId(countryCode);
+                    if (countryId) {
+                        this.$axios.get('/locations/states/' + countryId)
+                            .then(response => {
+                                console.log('States response in loadStates:', response.data);
+                                const transformed = response.data.map(item => ({
+                                    code: item.id,
+                                    default_name: item.state_name,
+                                    state_name: item.state_name
+                                }));
+                                console.log('Transformed states in loadStates:', transformed);
+                                this.states[countryCode] = transformed;
+                                console.log('this.states after loadStates:', this.states);
+                            })
+                            .catch(error => {
+                                console.error('Error in loadStates:', error);
+                            });
+                    } else {
+                        console.log('No countryId found in loadStates for country:', countryCode);
+                        this.states[countryCode] = [];
+                    }
+                },
+
+                loadCities(stateName) {
+                    console.log('loadCities called for stateName:', stateName);
+                    // Call endpoint using the state name. Make sure the backend endpoint accepts the state name.
+                    this.$axios.get('/locations/cities/' + encodeURIComponent(stateName))
+                        .then(response => {
+                            console.log('Cities response:', response.data);
+                            this.cities = response.data;
+                        })
+                        .catch(error => {
+                            console.error('Error in loadCities:', error);
+                        });
+                },
+
+                loadBlocks(cityName) {
+                    console.log('loadBlocks called for cityName:', cityName);
+                    // Call endpoint using the city name. Ensure the backend accepts a city name.
+                    this.$axios.get('/locations/blocks/' + encodeURIComponent(cityName))
+                        .then(response => {
+                            console.log('Blocks response:', response.data);
+                            this.blocks = response.data;
+                        })
+                        .catch(error => {
+                            console.error('Error in loadBlocks:', error);
+                        });
+                },
+            },
         });
     </script>
 @endPushOnce

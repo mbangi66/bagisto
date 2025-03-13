@@ -46,12 +46,18 @@ class SavedFilterController extends Controller
      */
     public function get()
     {
+        $user = auth()->guard('admin')->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        
         $savedFilters = $this->savedFilterRepository->findWhere([
             'src'     => request()->get('src'),
-            'user_id' => auth()->guard('admin')->user()->id,
+            'user_id' => $user->id,
         ]);
-
-        return response()->json(['data' => $savedFilters]);
+        
+        return response()->json(['data' => $savedFilters]);        
     }
 
     /**

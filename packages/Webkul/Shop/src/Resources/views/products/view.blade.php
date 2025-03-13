@@ -516,7 +516,7 @@
                                 formData.set('right_power', this.selectedProduct);
                                 // Ensure the qty for the selected product is 2
                                 formData.delete(`qty[${this.selectedProduct}]`);
-                                formData.append(`qty[${this.selectedProduct}]`, 2);
+                                formData.append(`qty[${this.selectedProduct}]`, 1);
                             }
                         }
 

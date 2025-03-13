@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('product:price-rule:index')->dailyAt('00:01');
 
         $schedule->command('exchange-rates:update')->dailyAt('00:01');
+        //$schedule->command('orders:dispatch-new-delivery')->everyMinute();
     }
 
     /**
