@@ -31,6 +31,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('exchange-rates:update')->dailyAt('00:01');
         //$schedule->command('orders:dispatch-new-delivery')->everyMinute();
+
+        $schedule->command('telescope:prune')->daily();
     }
 
     /**

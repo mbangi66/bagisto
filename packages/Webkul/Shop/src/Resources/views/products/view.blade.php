@@ -493,10 +493,52 @@
                         powerOption: 'with',
                         differentPowers: false,
                         selectedProduct: '',
+                        selectedQty: 1,
                         leftProduct: '',
+                        leftQty: 1,
                         rightProduct: '',
+                        rightQty: 1,
                     }
                 },
+
+                watch: {
+    // Single-power
+    selectedProduct(newVal, oldVal) {
+        if (newVal !== oldVal) {
+            this.$nextTick(() => {
+                this.selectedQty = 1;
+            });
+        }
+    },
+
+    // Left lens
+    leftProduct(newVal, oldVal) {
+        if (newVal !== oldVal) {
+            this.$nextTick(() => {
+                this.leftQty = 1;
+            });
+        }
+    },
+
+    // Right lens
+    rightProduct(newVal, oldVal) {
+        if (newVal !== oldVal) {
+            this.$nextTick(() => {
+                this.rightQty = 1;
+            });
+        }
+    },
+    
+    // Add a watcher for the differentPowers toggle
+    differentPowers(newVal) {
+        // Reset quantities when switching between single and dual mode
+        this.$nextTick(() => {
+            this.selectedQty = 1;
+            this.leftQty = 1;
+            this.rightQty = 1;
+        });
+    }
+},
 
                 methods: {
                     addToCart(params) {
@@ -509,14 +551,22 @@
                         if (!this.differentPowers) {
                             // Single power mode: assign the same product for both eyes
                             if (this.selectedProduct) {
-                                // Remove the grouped_product field if present
                                 formData.delete('grouped_product');
-                                // Set left_power and right_power to the selected product
                                 formData.set('left_power', this.selectedProduct);
                                 formData.set('right_power', this.selectedProduct);
-                                // Ensure the qty for the selected product is 2
-                                formData.delete(`qty[${this.selectedProduct}]`);
-                                formData.append(`qty[${this.selectedProduct}]`, 1);
+                                                        } else {
+                                formData.delete('grouped_product');
+
+                                if (this.leftProduct) {
+                                    formData.set('left_power', this.leftProduct);
+                                }
+
+                                if (this.rightProduct) {
+                                    formData.set('right_power', this.rightProduct);
+                                }
+
+                                // Do not overwrite qty[leftProduct] or qty[rightProduct]
+                                // unless you want to enforce a specific value.
                             }
                         }
 

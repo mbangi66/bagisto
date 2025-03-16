@@ -40,7 +40,7 @@ class InventorySourceRequest extends FormRequest
             'country'        => ['required'],
             'state'          => ['required'],
             'city'           => ['required'],
-            'postcode'       => ['nullable', new PostCode],
+            'postcode'       => ['required', new PostCode],
         ];
     }
 }

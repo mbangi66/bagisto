@@ -108,11 +108,15 @@
                         <label class="block text-sm font-semibold text-gray-800 mb-2">
                             @lang('shop::app.products.view.type.configurable.quantity')
                         </label>
-                        <x-shop::quantity-changer
-                            v-bind:name="'qty[' + selectedProduct + ']'"
-                            :value="1"
-                            class="w-24 border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring focus:border-blue-500"
-                        />
+                        <div class="flex items-center">
+                            <button type="button" @click="selectedQty > 1 ? selectedQty-- : 1" 
+                                    class="px-3 py-1 border border-gray-300 rounded-l">-</button>
+                            <input type="number" v-model.number="selectedQty" min="1" 
+                                class="w-16 text-center border-t border-b border-gray-300 py-1"
+                                :name="'qty[' + selectedProduct + ']'">
+                            <button type="button" @click="selectedQty++" 
+                                    class="px-3 py-1 border border-gray-300 rounded-r">+</button>
+                        </div>
                     </div>
                 </div>
 
@@ -155,11 +159,15 @@
                         </select>
                         <div v-if="leftProduct" class="mt-2">
                             <label class="block text-sm font-semibold text-gray-800 mb-2">Quantity</label>
-                            <x-shop::quantity-changer
-                                v-bind:name="'qty[' + leftProduct + ']'"
-                                :value="1"
-                                class="w-24 border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring focus:border-blue-500"
-                            />
+                            <div class="flex items-center">
+                                <button type="button" @click="leftQty > 1 ? leftQty-- : 1" 
+                                        class="px-3 py-1 border border-gray-300 rounded-l">-</button>
+                                <input type="number" v-model.number="leftQty" min="1" 
+                                    class="w-16 text-center border-t border-b border-gray-300 py-1"
+                                    :name="'qty[' + leftProduct + ']'">
+                                <button type="button" @click="leftQty++" 
+                                        class="px-3 py-1 border border-gray-300 rounded-r">+</button>
+                            </div>
                         </div>
                     </div>
 
@@ -200,11 +208,15 @@
                         </select>
                         <div v-if="rightProduct" class="mt-2">
                             <label class="block text-sm font-semibold text-gray-800 mb-2">Quantity</label>
-                            <x-shop::quantity-changer
-                                v-bind:name="'qty[' + rightProduct + ']'"
-                                :value="1"
-                                class="w-24 border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring focus:border-blue-500"
-                            />
+                            <div class="flex items-center">
+                                <button type="button" @click="rightQty > 1 ? rightQty-- : 1" 
+                                        class="px-3 py-1 border border-gray-300 rounded-l">-</button>
+                                <input type="number" v-model.number="rightQty" min="1" 
+                                    class="w-16 text-center border-t border-b border-gray-300 py-1"
+                                    :name="'qty[' + rightProduct + ']'">
+                                <button type="button" @click="rightQty++" 
+                                        class="px-3 py-1 border border-gray-300 rounded-r">+</button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -7,7 +7,7 @@
     <div class="mb-5 flex items-center justify-between gap-4 max-sm:flex-wrap">
         <div class="grid gap-1.5">
             <p class="text-xl font-bold !leading-normal text-gray-800 dark:text-white">
-                @lang('admin::app.dashboard.index.user-name', ['user_name' => auth()->guard('admin')->user()->name])
+                @lang('admin::app.dashboard.index.user-name', ['user_name' => auth()->guard('admin')->user()->name ?? 'Guest'])
             </p>
 
             <p class="!leading-normal text-gray-600 dark:text-gray-300">

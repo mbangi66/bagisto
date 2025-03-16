@@ -135,7 +135,14 @@ return [
         'name'  => 'admin::app.acl.copy',
         'route' => 'admin.catalog.products.copy',
         'sort'  => 2,
-    ], [
+    ],
+    [
+        'key'   => 'catalog.copy-powers',
+        'name'  => 'admin::app.acl.copy-powers',
+        'route' => 'admin.catalog.products.copy-powers.form',
+        'sort'  => 1,
+    ],
+     [
         'key'   => 'catalog.products.edit',
         'name'  => 'admin::app.acl.edit',
         'route' => 'admin.catalog.products.edit',

@@ -34,8 +34,8 @@
                         >
                             <x-shop::media.images.lazy
                                 ::src="category.logo?.large_image_url || '{{ bagisto_asset('images/small-product-placeholder.webp') }}'"
-                                width="110"
-                                height="110"
+                                width="70"
+                                height="70"
                                 class="w-full rounded-full max-sm:h-[60px] max-sm:w-[60px]"
                                 ::alt="category.name"
                             />

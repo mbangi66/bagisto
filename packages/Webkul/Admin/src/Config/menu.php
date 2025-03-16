@@ -86,6 +86,12 @@ return [
         'route'      => 'admin.catalog.families.index',
         'sort'       => 4,
         'icon'       => '',
+    ], [
+        'key'   => 'catalog.copy-powers',
+        'name'  => 'admin::app.acl.copy-powers', 
+        'route' => 'admin.catalog.products.copy-powers.form', 
+        'sort'  => 5,
+        'icon'       => '',
     ],
 
     /**

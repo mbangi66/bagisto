@@ -32,6 +32,7 @@ class Kernel extends HttpKernel
     protected $middlewareGroups = [
         'admin' => [
             \App\Http\Middleware\AdminLocale::class,
+            \App\Http\Middleware\AdminAuth::class,
         ],
         'web' => [
             \App\Http\Middleware\EncryptCookies::class,

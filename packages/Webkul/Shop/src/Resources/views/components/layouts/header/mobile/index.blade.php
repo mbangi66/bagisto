@@ -18,8 +18,8 @@
                             <img
                                 src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
                                 alt="{{ config('app.name') }}"
-                                width="110"
-                                height="29"
+                                width="70"
+                                height="70"
                             >
                         </a>
                     </div>

@@ -12,6 +12,7 @@ use Webkul\Core\Eloquent\Repository;
 use Webkul\Customer\Repositories\CustomerRepository;
 use Webkul\Marketing\Repositories\SearchSynonymRepository;
 use Webkul\Product\Contracts\Product;
+use Illuminate\Support\Facades\Log;
 
 class ProductRepository extends Repository
 {
@@ -112,11 +113,43 @@ class ProductRepository extends Repository
      */
     public function findExistingPowerCopy($baseProductId, $power)
     {
+        // Retrieve the sphere_power attribute
+        $sphereAttribute = app(\Webkul\Attribute\Repositories\AttributeRepository::class)
+                            ->findOneByField('code', 'sphere_power');
+    
+        if (!$sphereAttribute) {
+            Log::error('Sphere power attribute not found');
+            return null;
+        }
+    
+        $attributeId = $sphereAttribute->id;
+        // If the returned column name is "sphere_power", we override it to "float_value"
+        $columnName = $sphereAttribute->column_name;
+        if ($columnName === 'sphere_power') {
+            $columnName = 'float_value';
+        }
+    
+        // Format the power value to two decimals (as stored in the DB)
+        $formattedPower = number_format((float)$power, 2, '.', '');
+    
+        Log::info("Checking for existing power copy", [
+            'baseProductId' => $baseProductId,
+            'power'         => $power,
+            'formattedPower'=> $formattedPower,
+            'attributeId'   => $attributeId,
+            'columnName'    => $columnName
+        ]);
+    
         $model = app($this->model());
+    
         return $model->where('parent_id', $baseProductId)
-                     ->where('sphere_power', $power)
-                     ->first();
-    }    
+                     ->whereHas('attribute_values', function ($query) use ($attributeId, $formattedPower, $columnName) {
+                         $query->where('attribute_id', $attributeId)
+                               ->where($columnName, $formattedPower);
+                     })->first();
+    }
+    
+    
 
     /**
      * Copy product.

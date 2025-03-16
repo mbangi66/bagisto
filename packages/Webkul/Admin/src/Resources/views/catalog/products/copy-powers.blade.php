@@ -35,11 +35,19 @@
     @pushOnce('scripts')
         <!-- Inline Vue template for the copy powers component -->
         <script type="text/x-template" id="v-copy-powers-template">
-            <!-- Using flex layout for left/right columns -->
             <div class="flex flex-row md:flex-row gap-4">
-                <!-- Left Column: Form and Powers Selection -->
+                <!-- Left Column: Form, Search, and Powers Selection -->
                 <div class="w-full md:w-1/2 box-shadow rounded bg-white p-4 dark:bg-gray-900">
                     <form @submit.prevent="submitForm">
+                        <!-- Product Search Input -->
+                        <div class="mb-4">
+                            <label for="productSearch" class="block font-medium mb-2 text-gray-800 dark:text-white">
+                                Search Product
+                            </label>
+                            <input type="text" v-model="searchQuery" id="productSearch" placeholder="Type to search..."
+                                   class="w-full py-2.5 px-3 border rounded-md text-sm text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900" />
+                        </div>
+
                         <!-- Base Product Selector -->
                         <div class="mb-5">
                             <label for="base_product" class="block font-medium mb-2 text-gray-800 dark:text-white">
@@ -54,7 +62,7 @@
                                 <option disabled value="">
                                     @lang('admin::app.catalog.products.copy-powers.select-product-placeholder')
                                 </option>
-                                <option v-for="product in productsArray" :key="product.id" :value="product.id">
+                                <option v-for="product in filteredProducts" :key="product.id" :value="product.id">
                                     @{{ product.name }}
                                 </option>
                             </select>
@@ -65,10 +73,17 @@
                             <label class="block font-medium mb-2 text-gray-800 dark:text-white">
                                 @lang('admin::app.catalog.products.copy-powers.available-powers')
                             </label>
-                            <div class="grid grid-cols-2 gap-2">
+                            <!-- If computedAvailablePowers contains only 0, show a message -->
+                            <div v-if="computedAvailablePowers.length === 1 && computedAvailablePowers[0] === 0">
+                                <p class="text-gray-600 dark:text-gray-300">
+                                    This product already has all available powers.
+                                </p>
+                            </div>
+                            <!-- Otherwise, show the power selection buttons -->
+                            <div v-else class="grid grid-cols-2 gap-2">
                                 <button 
                                     type="button" 
-                                    v-for="(power, index) in availablePowers" 
+                                    v-for="(power, index) in computedAvailablePowers" 
                                     :key="index" 
                                     :class="buttonClass(power)" 
                                     class="px-3 py-2 rounded transition-colors text-sm"
@@ -77,6 +92,7 @@
                                 </button>
                             </div>
                         </div>
+
 
                         <!-- Selected Powers Count Display -->
                         <div class="mb-4 text-sm" v-if="selectedPowers.length > 0">
@@ -94,7 +110,7 @@
                             @lang('admin::app.catalog.products.copy-powers.copy-powers-btn')
                         </button>
                     </form>
-                    
+                        
                     <!-- Flash Message -->
                     <div v-if="flashMessage" :class="flashMessageClass" class="mt-4 p-2.5 rounded">
                         @{{ flashMessage }}
@@ -106,11 +122,10 @@
                     <h2 class="mb-4 text-base font-semibold text-gray-800 dark:text-white">Product Details</h2>
                     
                     <div v-if="selectedProduct" class="border rounded overflow-hidden">
-                        <!-- Product Layout with left/right details -->
                         <div class="flex flex-col md:flex-row gap-4 p-4">
                             <!-- Left Side: Product Info -->
                             <div class="flex flex-col gap-1.5 flex-1">
-                                <p class="break-all text-base font-semibold text-gray-800 dark:text-white">
+                                <p class="break-all text-lg font-semibold text-gray-800 dark:text-white">
                                     @{{ selectedProduct.name }}
                                 </p>
                                 
@@ -118,67 +133,46 @@
                                     SKU: @{{ selectedProduct.sku }}
                                 </p>
                                 
-                                <!-- Fixed Attribute Family Display -->
                                 <p class="text-gray-600 dark:text-gray-300" v-if="selectedProduct.attribute_family">
                                     Attribute Family: @{{ selectedProduct.attribute_family.name || selectedProduct.attribute_family }}
                                 </p>
+                                
+                                <!-- Additional Product Info -->
+                                <p class="text-gray-600 dark:text-gray-300" v-if="selectedProduct.price">
+                                    Price: @{{ selectedProduct.price }}
+                                </p>
+                                <p class="text-gray-600 dark:text-gray-300" v-if="selectedProduct.quantity !== undefined">
+                                    Qty: @{{ selectedProduct.quantity }}
+                                </p>
                             </div>
                             
-                            <!-- Right Side: Product Image & Details -->
-                            <div class="flex flex-col gap-1.5">
+                            <!-- Right Side: Product Image -->
+                            <div class="flex flex-col items-center">
                                 <div class="relative">
-                                    <template v-if="selectedProduct.base_image">
+                                    <template v-if="selectedProduct.images && selectedProduct.images.length > 0">
                                         <img
-                                            class="max-h-[65px] min-h-[65px] min-w-[65px] max-w-[65px] rounded"
-                                            :src="selectedProduct.base_image"
+                                            class="w-[200px] h-[200px] object-cover rounded"
+                                            :src="selectedProduct.images[0].url"
                                             alt="Product Image"
                                         />
+
                                         <span v-if="selectedProduct.images_count" class="absolute bottom-px left-px rounded-full bg-darkPink px-1.5 text-xs font-bold text-white">
                                             @{{ selectedProduct.images_count }}
                                         </span>
                                     </template>
                                     <template v-else>
-                                        <div class="relative h-[60px] max-h-[60px] w-full max-w-[60px] rounded border border-dashed border-gray-300 dark:border-gray-800">
-                                            <img src="{{ bagisto_asset('images/product-placeholders/front.svg')}}">
+                                        <div class="relative h-[150px] max-h-[150px] w-full max-w-[150px] rounded border border-dashed border-gray-300 dark:border-gray-800">
+                                            <img src="{{ bagisto_asset('images/product-placeholders/front.svg') }}">
                                             <p class="absolute bottom-1.5 w-full text-center text-[6px] font-semibold text-gray-400">
                                                 @lang('admin::app.catalog.products.index.datagrid.product-image')
                                             </p>
                                         </div>
                                     </template>
                                 </div>
-                                
-                                <div class="flex flex-col gap-1.5">
-                                    <p v-if="selectedProduct.price" class="text-base font-semibold text-gray-800 dark:text-white">
-                                        @{{ selectedProduct.price }}
-                                    </p>
-                                    
-                                    <!-- Product Quantity -->
-                                    <div v-if="selectedProduct.type && ['configurable', 'bundle', 'grouped'].includes(selectedProduct.type)">
-                                        <p class="text-gray-600 dark:text-gray-300">
-                                            <span class="text-red-600">N/A</span>
-                                        </p>
-                                    </div>
-                                    <div v-else-if="selectedProduct.quantity !== undefined">
-                                        <p class="text-gray-600 dark:text-gray-300" v-if="selectedProduct.quantity > 0">
-                                            <span class="text-green-600">
-                                                Qty: @{{ selectedProduct.quantity }}
-                                            </span>
-                                        </p>
-                                        <p class="text-gray-600 dark:text-gray-300" v-else>
-                                            <span class="text-red-600">
-                                                @lang('admin::app.catalog.products.index.datagrid.out-of-stock')
-                                            </span>
-                                        </p>
-                                    </div>
-                                    
-                                    <p v-if="selectedProduct.id" class="text-gray-600 dark:text-gray-300">
-                                        ID: @{{ selectedProduct.id }}
-                                    </p>
-                                </div>
                             </div>
                         </div>
                         
-                        <!-- Additional Product Info -->
+                        <!-- Additional Product Info Section -->
                         <div class="border-t p-4">
                             <div class="flex flex-col gap-1.5">
                                 <p v-if="selectedProduct.status !== undefined" :class="[selectedProduct.status ? 'label-active' : 'label-info']">
@@ -219,6 +213,7 @@
                 },
                 data() {
                     return {
+                        searchQuery: '',
                         selectedProductId: '',
                         selectedPowers: [],
                         flashMessage: '',
@@ -234,13 +229,29 @@
                     productsArray() {
                         return Array.isArray(this.products) ? this.products : Object.values(this.products);
                     },
+                    filteredProducts() {
+                        if (!this.searchQuery) {
+                            return this.productsArray;
+                        }
+                        return this.productsArray.filter(product =>
+                            product.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+                        );
+                    },
                     selectedProduct() {
                         return this.productsArray.find(product => product.id == this.selectedProductId);
+                    },
+                    computedAvailablePowers() {
+                        if (this.selectedProduct && this.selectedProduct.copyablePowers) {
+                            return this.selectedProduct.copyablePowers;
+                        }
+                        return this.availablePowers;
                     }
                 },
                 methods: {
                     updateSelectedProduct() {
                         console.log("Selected product ID:", this.selectedProductId);
+                        console.log(this.selectedProduct);
+                        this.selectedPowers = [];
                     },
                     togglePower(power) {
                         const index = this.selectedPowers.indexOf(power);
@@ -270,9 +281,6 @@
                             const response = await this.$axios.post("{{ route('admin.catalog.products.copy-powers') }}", payload);
                             this.flashMessage = response.data.message || '@lang("admin::app.catalog.products.copy-powers.success-message")';
                             this.flashMessageType = 'success';
-                            
-                            // Optional: Reset form after successful submission
-                            // this.selectedPowers = [];
                         } catch (error) {
                             this.flashMessage = error.response?.data?.error || '@lang("admin::app.catalog.products.copy-powers.error-message")';
                             this.flashMessageType = 'error';

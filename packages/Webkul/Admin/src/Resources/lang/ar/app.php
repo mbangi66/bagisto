@@ -4376,6 +4376,7 @@ return [
         'url-rewrites'             => 'إعادة كتابة عناوين URL',
         'users'                    => 'المستخدمين',
         'view'                     => 'عرض',
+        'copy-powers'              => 'نسخ القوى',
     ],
 
     'errors' => [

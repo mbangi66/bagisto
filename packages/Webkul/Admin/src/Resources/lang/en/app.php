@@ -4377,6 +4377,7 @@ return [
         'url-rewrites'             => 'URL Rewrites',
         'users'                    => 'Users',
         'view'                     => 'View',
+        'copy-powers'              => 'Copy Powers',
     ],
 
     'errors' => [

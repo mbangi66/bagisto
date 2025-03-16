@@ -80,6 +80,11 @@ return [
         'queue' => env('TELESCOPE_QUEUE', null),
     ],
 
+    'prune' => [
+        'hours' => env('TELESCOPE_PRUNE_HOURS', 72), // 3 days = 72 hours
+        'entries' => env('TELESCOPE_PRUNE_ENTRIES', 100000), // As a backup, also prune by entries
+    ],
+    
     /*
     |--------------------------------------------------------------------------
     | Telescope Route Middleware
