@@ -185,6 +185,56 @@ class Grouped extends AbstractType
     }
 
     /**
+     * Get product prices for regular and discounted prices
+     * 
+     * @return array
+     */
+    public function getProductPrices()
+    {
+        $minimalRegularPrice = null;
+        $minimalFinalPrice = null;
+
+        foreach ($this->product->grouped_products as $groupedProduct) {
+            if (! $groupedProduct->associated_product->getTypeInstance()->isSaleable()) {
+                continue;
+            }
+
+            $associatedProductTypeInstance = $groupedProduct->associated_product->getTypeInstance();
+            
+            // Get regular price
+            $regularPrice = $groupedProduct->associated_product->price;
+            
+            // Get final price considering special price and catalog rules
+            $finalPrice = $associatedProductTypeInstance->getMinimalPrice();
+
+            if ($minimalRegularPrice === null || $regularPrice < $minimalRegularPrice) {
+                $minimalRegularPrice = $regularPrice;
+            }
+
+            if ($minimalFinalPrice === null || $finalPrice < $minimalFinalPrice) {
+                $minimalFinalPrice = $finalPrice;
+            }
+        }
+
+        // If no saleable products, return zero prices
+        if ($minimalRegularPrice === null) {
+            $minimalRegularPrice = 0;
+            $minimalFinalPrice = 0;
+        }
+
+        return [
+            'regular' => [
+                'price' => $minimalRegularPrice,
+                'formatted_price' => core()->currency($minimalRegularPrice),
+            ],
+            'final' => [
+                'price' => $minimalFinalPrice,
+                'formatted_price' => core()->currency($minimalFinalPrice),
+            ],
+        ];
+    }
+
+    /**
      * Add product. Returns error message if can't prepare product.
      *
      * @param  array  $data

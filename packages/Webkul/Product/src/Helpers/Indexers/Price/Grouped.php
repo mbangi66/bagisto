@@ -11,11 +11,47 @@ class Grouped extends AbstractType
      */
     public function getIndices()
     {
+        if (! $this->product->grouped_products()->count()) {
+            return parent::getIndices();
+        }
+
+        $minRegularPrice = null;
+        $minPrice = null;
+
+        foreach ($this->product->grouped_products as $groupedProduct) {
+            if (! $groupedProduct->associated_product) {
+                continue;
+            }
+
+            $productIndexer = $groupedProduct->associated_product->getTypeInstance()
+                ->getPriceIndexer()
+                ->setChannel($this->channel)
+                ->setCustomerGroup($this->customerGroup)
+                ->setProduct($groupedProduct->associated_product);
+
+            $productPrice = $productIndexer->getMinimalPrice();
+            $productRegularPrice = $groupedProduct->associated_product->price;
+
+            if (
+                $minPrice === null
+                || $productPrice < $minPrice
+            ) {
+                $minPrice = $productPrice;
+            }
+
+            if (
+                $minRegularPrice === null
+                || $productRegularPrice < $minRegularPrice
+            ) {
+                $minRegularPrice = $productRegularPrice;
+            }
+        }
+
         return [
-            'min_price'         => $this->getMinimalPrice() ?? 0,
-            'regular_min_price' => $this->getRegularMinimalPrice() ?? 0,
-            'max_price'         => $this->getMaximumPrice() ?? 0,
-            'regular_max_price' => $this->getRegularMaximumPrice() ?? 0,
+            'min_price'         => $minPrice ?? 0,
+            'regular_min_price' => $minRegularPrice ?? 0,
+            'max_price'         => $minPrice ?? 0,
+            'regular_max_price' => $minRegularPrice ?? 0,
             'product_id'        => $this->product->id,
             'channel_id'        => $this->channel->id,
             'customer_group_id' => $this->customerGroup->id,
