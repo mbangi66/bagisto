@@ -8,6 +8,8 @@ use Webkul\Admin\DataGrids\Marketing\Promotions\CatalogRuleDataGrid;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Http\Requests\CatalogRuleRequest;
 use Webkul\CatalogRule\Repositories\CatalogRuleRepository;
+use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\Process\Process;
 
 class CatalogRuleController extends Controller
 {
@@ -55,6 +57,19 @@ class CatalogRuleController extends Controller
 
         Event::dispatch('promotions.catalog_rule.create.after', $catalogRule);
 
+        $process = new \Symfony\Component\Process\Process([
+            PHP_BINARY,
+            base_path('artisan'),
+            'indexer:index',
+            '--mode=full'
+        ]);
+        
+        $process->run();
+        
+        if (!$process->isSuccessful()) {
+            \Log::error('Indexer process failed: ' . $process->getErrorOutput());
+        }
+        
         session()->flash('success', trans('admin::app.marketing.promotions.catalog-rules.create-success'));
 
         return redirect()->route('admin.marketing.promotions.catalog_rules.index');
@@ -86,6 +101,19 @@ class CatalogRuleController extends Controller
         $catalogRule = $this->catalogRuleRepository->update($catalogRuleRequest->all(), $id);
 
         Event::dispatch('promotions.catalog_rule.update.after', $catalogRule);
+
+        $process = new \Symfony\Component\Process\Process([
+            PHP_BINARY,
+            base_path('artisan'),
+            'indexer:index',
+            '--mode=full'
+        ]);
+        
+        $process->run();
+        
+        if (!$process->isSuccessful()) {
+            \Log::error('Indexer process failed: ' . $process->getErrorOutput());
+        }
 
         session()->flash('success', trans('admin::app.marketing.promotions.catalog-rules.update-success'));
 

@@ -10,6 +10,7 @@ use Webkul\Admin\DataGrids\Marketing\Promotions\CartRuleDataGrid;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Http\Requests\CartRuleRequest;
 use Webkul\CartRule\Repositories\CartRuleRepository;
+use Symfony\Component\Process\Process;
 
 class CartRuleController extends Controller
 {
@@ -87,7 +88,18 @@ class CartRuleController extends Controller
             $cartRule = $this->cartRuleRepository->create($cartRuleRequest->all());
 
             Event::dispatch('promotions.cart_rule.create.after', $cartRule);
-
+            $process = new \Symfony\Component\Process\Process([
+                PHP_BINARY,
+                base_path('artisan'),
+                'indexer:index',
+                '--mode=full'
+            ]);
+            
+            $process->run();
+            
+            if (!$process->isSuccessful()) {
+                \Log::error('Indexer process failed: ' . $process->getErrorOutput());
+            }
             session()->flash('success', trans('admin::app.marketing.promotions.cart-rules.create.create-success'));
 
             return redirect()->route('admin.marketing.promotions.cart_rules.index');
@@ -139,7 +151,19 @@ class CartRuleController extends Controller
             $cartRule = $this->cartRuleRepository->update($cartRuleRequest->all(), $id);
 
             Event::dispatch('promotions.cart_rule.update.after', $cartRule);
-
+            $process = new \Symfony\Component\Process\Process([
+                PHP_BINARY,
+                base_path('artisan'),
+                'indexer:index',
+                '--mode=full'
+            ]);
+            
+            $process->run();
+            
+            if (!$process->isSuccessful()) {
+                \Log::error('Indexer process failed: ' . $process->getErrorOutput());
+            }
+            
             session()->flash('success', trans('admin::app.marketing.promotions.cart-rules.edit.update-success'));
 
             return redirect()->route('admin.marketing.promotions.cart_rules.index');
