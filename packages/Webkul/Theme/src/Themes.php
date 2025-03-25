@@ -190,7 +190,7 @@ class Themes
      */
     public function current()
     {
-        return $this->activeTheme ?? null;
+        return $this->activeTheme ?? $this->set($this->defaultThemeCode);
     }
 
     /**
