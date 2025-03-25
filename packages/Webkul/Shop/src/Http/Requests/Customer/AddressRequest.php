@@ -30,14 +30,14 @@ class AddressRequest extends FormRequest
             'company_name' => ['nullable'],
             'first_name'   => ['required'],
             'last_name'    => ['required'],
-            'address'      => ['required', 'array', 'min:1'],
+            'address'      => ['nullable', 'array', 'min:1'],
             'country'      => core()->isCountryRequired() ? ['required'] : ['nullable'],
             'state'        => core()->isStateRequired() ? ['required'] : ['nullable'],
             'city'         => ['required', 'string'],
             'postcode'     => core()->isPostCodeRequired() ? ['nullable'] : [new PostCode],
             'phone'        => ['required', new PhoneNumber],
             'vat_id'       => [new VatIdRule],
-            'email'        => ['required'],
+            'email'        => ['nullable'],
         ];
     }
 
