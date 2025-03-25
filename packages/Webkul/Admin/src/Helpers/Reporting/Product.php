@@ -325,7 +325,7 @@ class Product extends AbstractReporting
     {
         $config = $this->getTimeInterval($startDate, $endDate, $period);
 
-        $groupColumn = str_replace('created_at', 'order_items.created_at', $config['group_column']);
+        $groupColumn = str_replace('created_at', 'lensorder_items.created_at', $config['group_column']);
 
         $results = $this->orderItemRepository
             ->resetModel()
