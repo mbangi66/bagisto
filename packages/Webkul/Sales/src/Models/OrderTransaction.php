@@ -38,9 +38,17 @@ class OrderTransaction extends Model implements OrderTransactionContract
         if (! $this->payment_method) {
             return;
         }
-
-        return config('payment_methods')[$this->payment_method]['title'];
+        
+        $paymentMethods = config('payment_methods');
+        
+        if (isset($paymentMethods[$this->payment_method]['title'])) {
+            return $paymentMethods[$this->payment_method]['title'];
+        }
+        
+        // Fallback or default title if key is not set
+        return 'Online Payment';
     }
+    
 
     /**
      * Create a new factory instance for the model
