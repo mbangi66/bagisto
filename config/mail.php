@@ -102,7 +102,7 @@ return [
     |
     */
     'admin' => [
-        'address' => env('ADMIN_MAIL_ADDRESS'),
+        'address' => env('ADMIN_MAIL_ADDRESS', 'hussamtarek16@marvellense.com'),
         'name'    => env('ADMIN_MAIL_NAME', 'Admin'),
     ],
 

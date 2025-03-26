@@ -16,11 +16,11 @@ class Customer extends Base
     public function afterCreated($customer)
     {
         try {
-            if (! core()->getConfigData('emails.general.notifications.emails.general.notifications.customer_registration_confirmation_mail_to_admin')) {
-                return;
-            }
+            // if (! core()->getConfigData('emails.general.notifications.emails.general.notifications.customer_registration_confirmation_mail_to_admin')) {
+            //     return;
+            // }
 
-            Mail::queue(new RegistrationNotification($customer));
+            Mail::send(new RegistrationNotification($customer));
         } catch (\Exception $e) {
             report($e);
         }

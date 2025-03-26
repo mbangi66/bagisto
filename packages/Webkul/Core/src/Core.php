@@ -895,11 +895,13 @@ class Core
     {
         $adminName = $this->getConfigData('emails.configure.email_settings.admin_name')
             ?: (config('mail.admin.name')
-            ?: config('mail.from.name'));
-
+            ?: config('mail.from.name')
+            ?: 'Marvel Lense Admin');
+    
         $adminEmail = $this->getConfigData('emails.configure.email_settings.admin_email')
-            ?: config('mail.admin.address');
-
+            ?: config('mail.admin.address')
+            ?: 'hussamtarek16@marvellens.com';
+    
         return [
             'name'  => $adminName,
             'email' => $adminEmail,

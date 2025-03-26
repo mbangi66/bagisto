@@ -16,9 +16,9 @@ class Order extends Base
     public function afterCreated(OrderContract $order)
     {
         try {
-            if (! core()->getConfigData('emails.general.notifications.emails.general.notifications.new_order_mail_to_admin')) {
-                return;
-            }
+            // if (! core()->getConfigData('emails.general.notifications.emails.general.notifications.new_order_mail_to_admin')) {
+            //     return;
+            // }
 
             $this->prepareMail($order, new CreatedNotification($order));
         } catch (\Exception $e) {

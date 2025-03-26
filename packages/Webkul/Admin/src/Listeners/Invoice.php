@@ -40,9 +40,9 @@ class Invoice extends Base
     public function sendMail($invoice)
     {
         try {
-            if (! core()->getConfigData('emails.general.notifications.emails.general.notifications.new_invoice_mail_to_admin')) {
-                return;
-            }
+            // if (! core()->getConfigData('emails.general.notifications.emails.general.notifications.new_invoice_mail_to_admin')) {
+            //     return;
+            // }
 
             $this->prepareMail($invoice, new InvoicedNotification($invoice));
         } catch (\Exception $e) {
