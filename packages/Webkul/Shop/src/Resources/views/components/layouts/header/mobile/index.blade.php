@@ -7,11 +7,11 @@
     <div class="flex w-full items-center justify-between">
         <!-- Left Navigation -->
         <div class="flex items-center gap-x-1.5">
-            {!! view_render_event('bagisto.shop.components.layouts.header.mobile.drawer.before') !!}
+            {!! view_render_event('bagasto.shop.components.layouts.header.mobile.drawer.before') !!}
             <x-shop::drawer position="left" width="100%">
                 <x-slot:toggle>
                     <span class="icon-hamburger cursor-pointer text-2xl"></span>
-                </x-slot>
+                </x-slot:toggle>
                 <x-slot:header>
                     <div class="flex items-center justify-between">
                         <a href="{{ route('shop.home.lending') }}">
@@ -23,7 +23,7 @@
                             >
                         </a>
                     </div>
-                </x-slot>
+                </x-slot:header>
                 <x-slot:content>
                     <!-- Account Profile Hero Section -->
                     <div class="mb-4 grid grid-cols-[auto_1fr] items-center gap-4 rounded-xl border border-zinc-200 p-2.5 max-md:mt-4">
@@ -54,16 +54,16 @@
                         @endauth
                     </div>
 
-                    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.drawer.categories.before') !!}
+                    {!! view_render_event('bagasto.shop.components.layouts.header.mobile.drawer.categories.before') !!}
                     <!-- Mobile category view -->
                     <v-mobile-category></v-mobile-category>
-                    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.drawer.categories.after') !!}
-                </x-slot>
-                <x-slot:footer></x-slot>
+                    {!! view_render_event('bagasto.shop.components.layouts.header.mobile.drawer.categories.after') !!}
+                </x-slot:content>
+                <x-slot:footer></x-slot:footer>
             </x-shop::drawer>
-            {!! view_render_event('bagisto.shop.components.layouts.header.mobile.drawer.after') !!}
+            {!! view_render_event('bagasto.shop.components.layouts.header.mobile.drawer.after') !!}
 
-            {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.before') !!}
+            {!! view_render_event('bagasto.shop.components.layouts.header.mobile.logo.before') !!}
             <a
                 href="{{ route('shop.home.lending') }}"
                 class="max-h-[30px]"
@@ -71,7 +71,7 @@
             >
                 <!-- Optionally render a logo here if desired -->
             </a>
-            {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.after') !!}
+            {!! view_render_event('bagasto.shop.components.layouts.header.mobile.logo.after') !!}
 
             <!-- NEW: Language & Currency Changer beside Logo -->
             @if(core()->getCurrentChannel()->locales()->count() > 1 || core()->getCurrentChannel()->currencies()->count() > 1)
@@ -82,19 +82,19 @@
                             <div class="flex items-center gap-x-2.5 text-lg font-small uppercase cursor-pointer">
                                 {{ core()->getCurrentCurrency()->symbol . ' ' . core()->getCurrentCurrencyCode() }}
                             </div>
-                        </x-slot>
+                        </x-slot:toggle>
                         <x-slot:header>
                             <div class="flex items-center justify-between">
                                 <p class="text-lg font-semibold">
                                     @lang('shop::app.components.layouts.header.mobile.currencies')
                                 </p>
                             </div>
-                        </x-slot>
+                        </x-slot:header>
                         <x-slot:content class="!px-0">
                             <div class="overflow-auto" style="max-height: calc(100vh - 100px); padding-bottom: 5rem;">
                                 <v-currency-switcher></v-currency-switcher>
                             </div>
-                        </x-slot>
+                        </x-slot:content>
                     </x-shop::drawer>
 
                     <!-- Language Changer -->
@@ -113,19 +113,19 @@
                                 />
                                 {{ core()->getCurrentChannel()->locales()->orderBy('name')->where('code', app()->getLocale())->value('name') }}
                             </div>
-                        </x-slot>
+                        </x-slot:toggle>
                         <x-slot:header>
                             <div class="flex items-center justify-between">
                                 <p class="text-lg font-semibold">
                                     @lang('shop::app.components.layouts.header.mobile.locales')
                                 </p>
                             </div>
-                        </x-slot>
+                        </x-slot:header>
                         <x-slot:content class="!px-0">
                             <div class="overflow-auto" style="max-height: calc(100vh - 100px); padding-bottom: 5rem;">
                                 <v-locale-switcher></v-locale-switcher>
                             </div>
-                        </x-slot>
+                        </x-slot:content>
                     </x-shop::drawer>
                 </div>
             @endif
@@ -137,7 +137,6 @@
         >
             <img style="height: 70px"
                 src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
-                
                 alt="{{ config('app.name') }}"
             >
         </a>
@@ -145,7 +144,7 @@
         <!-- Right Navigation -->
         <div>
             <div class="flex items-center gap-x-5 max-md:gap-x-4">
-                {!! view_render_event('bagisto.shop.components.layouts.header.mobile.compare.before') !!}
+                {!! view_render_event('bagasto.shop.components.layouts.header.mobile.compare.before') !!}
                 @if($showCompare)
                     <a
                         href="{{ route('shop.compare.index') }}"
@@ -154,20 +153,20 @@
                         <span class="icon-compare cursor-pointer text-2xl"></span>
                     </a>
                 @endif
-                {!! view_render_event('bagisto.shop.components.layouts.header.mobile.compare.after') !!}
+                {!! view_render_event('bagasto.shop.components.layouts.header.mobile.compare.after') !!}
 
-                {!! view_render_event('bagisto.shop.components.layouts.header.mobile.mini_cart.before') !!}
+                {!! view_render_event('bagasto.shop.components.layouts.header.mobile.mini_cart.before') !!}
                 @if(core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
                     @include('shop::checkout.cart.mini-cart')
                 @endif
-                {!! view_render_event('bagisto.shop.components.layouts.header.mobile.mini_cart.after') !!}
+                {!! view_render_event('bagasto.shop.components.layouts.header.mobile.mini_cart.after') !!}
 
                 <!-- For Large screens -->
                 <div class="max-md:hidden">
                     <x-shop::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
                         <x-slot:toggle>
                             <span class="icon-users cursor-pointer text-2xl"></span>
-                        </x-slot>
+                        </x-slot:toggle>
                         <!-- Guest Dropdown -->
                         @guest('customer')
                             <x-slot:content>
@@ -180,9 +179,9 @@
                                     </p>
                                 </div>
                                 <p class="py-2px mt-3 w-full border border-zinc-200"></p>
-                                {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.customers_action.before') !!}
+                                {!! view_render_event('bagasto.shop.components.layouts.header.mobile.index.customers_action.before') !!}
                                 <div class="mt-6 flex gap-4">
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.sign_in_button.before') !!}
+                                    {!! view_render_event('bagasto.shop.components.layouts.header.mobile.index.sign_in_button.before') !!}
                                     <a
                                         href="{{ route('shop.customer.session.create') }}"
                                         class="m-0 mx-auto block w-max cursor-pointer rounded-2xl bg-navyBlue px-7 py-4 text-center text-base font-medium text-white ltr:ml-0 rtl:mr-0"
@@ -195,10 +194,10 @@
                                     >
                                         @lang('shop::app.components.layouts.header.sign-up')
                                     </a>
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.sign_in_button.after') !!}
+                                    {!! view_render_event('bagasto.shop.components.layouts.header.mobile.index.sign_in_button.after') !!}
                                 </div>
-                                {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.customers_action.after') !!}
-                            </x-slot>
+                                {!! view_render_event('bagasto.shop.components.layouts.header.mobile.index.customers_action.after') !!}
+                            </x-slot:content>
                         @endguest
                         <!-- Customers Dropdown -->
                         @auth('customer')
@@ -214,7 +213,7 @@
                                 </div>
                                 <p class="py-2px mt-3 w-full border border-zinc-200"></p>
                                 <div class="mt-2.5 grid gap-1 pb-2.5">
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.profile_dropdown.links.before') !!}
+                                    {!! view_render_event('bagasto.shop.components.layouts.header.mobile.index.profile_dropdown.links.before') !!}
                                     <a
                                         class="cursor-pointer px-5 py-2 text-base hover:bg-gray-100"
                                         href="{{ route('shop.customers.account.profile.index') }}"
@@ -250,9 +249,9 @@
                                             @lang('shop::app.components.layouts.header.logout')
                                         </a>
                                     @endauth
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.profile_dropdown.links.after') !!}
+                                    {!! view_render_event('bagasto.shop.components.layouts.header.mobile.index.profile_dropdown.links.after') !!}
                                 </div>
-                            </x-slot>
+                            </x-slot:content>
                         @endauth
                     </x-shop::dropdown>
                 </div>
@@ -279,7 +278,7 @@
         </div>
     </div>
     @if (Request::is('/'))
-    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.search.before') !!}
+    {!! view_render_event('bagasto.shop.components.layouts.header.mobile.search.before') !!}
     <div class="w-full flex items-center p-4 gap-4">
         <!-- Order Now Button -->
             <a 
@@ -312,7 +311,7 @@
         </form>
         
     </div>
-    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.search.after') !!}
+    {!! view_render_event('bagasto.shop.components.layouts.header.mobile.search.after') !!}
     @endif
 </div>
 
@@ -320,11 +319,27 @@
     <script type="text/x-template" id="v-mobile-category-template">
         <div>
             <template v-for="(category) in categories">
-                {!! view_render_event('bagisto.shop.components.layouts.header.mobile.category.before') !!}
+                {!! view_render_event('bagasto.shop.components.layouts.header.mobile.category.before') !!}
                 <div class="flex items-center justify-between border border-b border-l-0 border-r-0 border-t-0 border-zinc-100 py-3.5 max-sm:py-2.5">
-                    <a :href="category.url" class="flex items-center justify-between">
-                        @{{ category.name }}
-                    </a>
+                    <!-- Category Name with conditional behavior -->
+                    <template v-if="category.products_count > 0">
+                        <!-- Active: clickable link -->
+                        <a :href="category.url" class="flex items-center justify-between">
+                            @{{ category.name }}
+                        </a>
+                    </template>
+                    <template v-else-if="category.children && category.children.length">
+                        <!-- Disabled but has children: clickable to toggle -->
+                        <a href="javascript:void(0)" class="flex items-center justify-between text-gray-400" @click="toggle(category)">
+                            @{{ category.name }}
+                        </a>
+                    </template>
+                    <template v-else>
+                        <!-- Completely disabled: not clickable -->
+                        <span class="flex items-center justify-between text-gray-400 cursor-not-allowed">
+                            @{{ category.name }}
+                        </span>
+                    </template>
                     <span
                         class="cursor-pointer text-2xl"
                         :class="{'icon-arrow-down': category.isOpen, 'icon-arrow-right': ! category.isOpen}"
@@ -335,9 +350,22 @@
                     <ul v-if="category.children.length">
                         <li v-for="secondLevelCategory in category.children">
                             <div class="flex items-center justify-between border border-b border-l-0 border-r-0 border-t-0 border-zinc-100 ltr:ml-3 rtl:mr-3">
-                                <a :href="secondLevelCategory.url" class="mt-5 flex items-center justify-between pb-5">
-                                    @{{ secondLevelCategory.name }}
-                                </a>
+                                <!-- Second-Level Category -->
+                                <template v-if="secondLevelCategory.products_count > 0">
+                                    <a :href="secondLevelCategory.url" class="mt-5 flex items-center justify-between pb-5">
+                                        @{{ secondLevelCategory.name }}
+                                    </a>
+                                </template>
+                                <template v-else-if="secondLevelCategory.children && secondLevelCategory.children.length">
+                                    <a href="javascript:void(0)" class="mt-5 flex items-center justify-between pb-5 text-gray-400" @click="secondLevelCategory.category_show = ! secondLevelCategory.category_show">
+                                        @{{ secondLevelCategory.name }}
+                                    </a>
+                                </template>
+                                <template v-else>
+                                    <span class="mt-5 flex items-center justify-between pb-5 text-gray-400 cursor-not-allowed">
+                                        @{{ secondLevelCategory.name }}
+                                    </span>
+                                </template>
                                 <span
                                     class="cursor-pointer text-2xl"
                                     :class="{'icon-arrow-down': secondLevelCategory.category_show, 'icon-arrow-right': ! secondLevelCategory.category_show}"
@@ -348,9 +376,22 @@
                                 <ul v-if="secondLevelCategory.children.length">
                                     <li v-for="thirdLevelCategory in secondLevelCategory.children">
                                         <div class="flex items-center justify-between border border-b border-l-0 border-r-0 border-t-0 border-zinc-100 ltr:ml-3 rtl:mr-3">
-                                            <a :href="thirdLevelCategory.url" class="mt-5 flex items-center justify-between pb-5 ltr:ml-3 rtl:mr-3">
-                                                @{{ thirdLevelCategory.name }}
-                                            </a>
+                                            <!-- Third-Level Category -->
+                                            <template v-if="thirdLevelCategory.products_count > 0">
+                                                <a :href="thirdLevelCategory.url" class="mt-5 flex items-center justify-between pb-5 ltr:ml-3 rtl:mr-3">
+                                                    @{{ thirdLevelCategory.name }}
+                                                </a>
+                                            </template>
+                                            <template v-else-if="thirdLevelCategory.children && thirdLevelCategory.children.length">
+                                                <a href="javascript:void(0)" class="mt-5 flex items-center justify-between pb-5 ltr:ml-3 rtl:mr-3 text-gray-400" @click="thirdLevelCategory.category_show = ! thirdLevelCategory.category_show">
+                                                    @{{ thirdLevelCategory.name }}
+                                                </a>
+                                            </template>
+                                            <template v-else>
+                                                <span class="mt-5 flex items-center justify-between pb-5 ltr:ml-3 rtl:mr-3 text-gray-400 cursor-not-allowed">
+                                                    @{{ thirdLevelCategory.name }}
+                                                </span>
+                                            </template>
                                         </div>
                                     </li>
                                 </ul>
@@ -364,7 +405,7 @@
                         @lang('shop::app.components.layouts.header.no-category-found')
                     </span>
                 </div>
-                {!! view_render_event('bagisto.shop.components.layouts.header.mobile.category.after') !!}
+                {!! view_render_event('bagasto.shop.components.layouts.header.mobile.category.after') !!}
             </template>
         </div>
     </script>
@@ -372,7 +413,7 @@
         app.component('v-mobile-category', {
             template: '#v-mobile-category-template',
             data() {
-                return  {
+                return {
                     categories: [],
                 }
             },
@@ -388,15 +429,31 @@
                 get() {
                     this.$axios.get("{{ route('shop.api.categories.tree') }}")
                         .then(response => {
-                            this.categories = response.data.data;
-                        }).catch(error => {
+                            let categories = response.data.data;
+                            // Merge product counts from global variable if available
+                            if (window.parentCategoryCounts) {
+                                const mergeCounts = (categoryList) => {
+                                    categoryList.forEach(category => {
+                                        if (window.parentCategoryCounts.hasOwnProperty(category.id)) {
+                                            category.products_count = window.parentCategoryCounts[category.id];
+                                        }
+                                        if (category.children && category.children.length) {
+                                            mergeCounts(category.children);
+                                        }
+                                    });
+                                };
+                                mergeCounts(categories);
+                            }
+                            this.categories = categories;
+                        })
+                        .catch(error => {
                             console.log(error);
                         });
                 },
                 toggle(selectedCategory) {
                     this.categories = this.categories.map((category) => ({
                         ...category,
-                        isOpen: category.id === selectedCategory.id ? ! category.isOpen : false,
+                        isOpen: category.id === selectedCategory.id ? !category.isOpen : false,
                     }));
                 },
             },
