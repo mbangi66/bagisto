@@ -44,7 +44,7 @@
     {!! view_render_event('bagisto.shop.checkout.onepage.header.after') !!}
 
     <!-- Page Content -->
-    <div class="container px-[60px] max-lg:px-8 max-sm:px-4">
+    <div class="container px-[60px] max-lg:px-8 max-sm:px-4 pb-24 md:pb-0">
 
         {!! view_render_event('bagisto.shop.checkout.onepage.breadcrumbs.before') !!}
 
@@ -130,6 +130,28 @@
                             </template>
                         </div>
                     </div>
+
+                    <!-- Mobile Place Order Button: Visible only on mobile view -->
+                    <div class="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white shadow-lg z-50" v-if="canPlaceOrder">
+                        <div class="flex justify-end">
+                            <template v-if="cart.payment_method == 'paypal_smart_button'">
+                                {!! view_render_event('bagisto.shop.checkout.onepage.summary.paypal_smart_button.before') !!}
+                                
+                                <!-- Paypal Smart Button Vue Component -->
+                                <v-paypal-smart-button></v-paypal-smart-button>
+                                
+                                {!! view_render_event('bagisto.shop.checkout.onepage.summary.paypal_smart_button.after') !!}
+                            </template>
+                            <template v-else>
+                                <x-shop::button
+                                    type="button"
+                                    class="primary-button w-max rounded-2xl bg-navyBlue px-11 py-3 w-full rounded-lg"
+                                    :title="trans('shop::app.checkout.onepage.summary.place-order')"
+                                    @click="placeOrder"
+                                />
+                            </template>
+                        </div>
+                    </div>
                 </div>
             </template>
         </script>
@@ -207,14 +229,16 @@
 
                     scrollToCurrentStep() {
                         let container = document.getElementById('steps-container');
+                        if (!container) return;
 
-                        if (! container) {
-                            return;
-                        }
+                        // Calculate offset in pixels (adjust the value as needed)
+                        let offset = 96;
+                        let elementTop = container.getBoundingClientRect().top + window.pageYOffset;
+                        let elementBottom = elementTop + container.offsetHeight;
 
-                        container.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'end'
+                        window.scrollTo({
+                            top: elementBottom - offset,
+                            behavior: 'smooth'
                         });
                     },
 
