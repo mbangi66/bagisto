@@ -24,7 +24,7 @@
                 {!! view_render_event('bagisto.shop.checkout.cart.logo.before') !!}
 
                 <a
-                    href="{{ route('shop.home.lending') }}"
+                    href="{{ route('shop.home.index') }}"
                     class="flex min-h-[30px]"
                     aria-label="@lang('shop::app.checkout.cart.index.bagisto')"
                 >
@@ -382,7 +382,7 @@
 
                                 <a
                                     class="secondary-button max-h-14 rounded-2xl max-md:rounded-lg max-md:px-6 max-md:py-3 max-md:text-sm max-sm:py-2"
-                                    href="{{ route('shop.home.lending') }}"
+                                    href="{{ route('shop.home.index') }}"
                                 >
                                     @lang('shop::app.checkout.cart.index.continue-shopping')
                                 </a> 

@@ -463,6 +463,16 @@
                                     </div>
 
                                     {!! view_render_event('bagisto.shop.products.view.compare.after', ['product' => $product]) !!}
+
+                                    <div
+                                        class="flex cursor-pointer items-center justify-center gap-2.5 max-sm:gap-1.5 max-sm:text-base"
+                                        role="button"
+                                        tabindex="0"
+                                        onclick="window.location.href='{{ route('shop.home.index') }}'"
+                                    >
+                                        <span class="icon-arrow-left text-2xl" role="presentation"></span>
+                                        @lang('shop::app.checkout.cart.index.continue-shopping')
+                                    </div>
                                 </div>
 
                                 {!! view_render_event('bagisto.shop.products.view.additional_actions.after', ['product' => $product]) !!}
